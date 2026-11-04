@@ -86,7 +86,7 @@ function renderGroupMembersList() {
     var list = document.getElementById('group-members-list');
     if (!list) return;
     if (!groupChatSettings.members || groupChatSettings.members.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">暂无成员，点击添加按钮添加</div>';
+        list.innerHTML = '<div class="group-roster-empty"><i class="fas fa-campground"></i><span>小队尚未集结，邀请旅伴加入吧</span></div>';
         return;
     }
     list.innerHTML = groupChatSettings.members.map(function(m, i) {
@@ -95,7 +95,7 @@ function renderGroupMembersList() {
             : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(var(--accent-color-rgb),0.15);display:flex;align-items:center;justify-content:center;"><i class="fas fa-user" style="font-size:14px;color:var(--accent-color);"></i></div>';
         return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--primary-bg);border:1px solid var(--border-color);border-radius:10px;">'
             + avatarHtml
-            + '<span style="flex:1;font-size:13px;font-weight:500;">' + (m.name || '成员' + (i+1)) + '</span>'
+            + '<span style="flex:1;font-size:13px;font-weight:500;">' + (m.name || '旅伴' + (i+1)) + '</span>'
             + '<button onclick="openEditGroupMember(' + i + ')" style="background:none;border:none;cursor:pointer;color:var(--accent-color);font-size:14px;padding:4px 8px;"><i class="fas fa-edit"></i></button>'
             + '<button onclick="deleteGroupMember(' + i + ')" style="background:none;border:none;cursor:pointer;color:#ff4757;font-size:14px;padding:4px 8px;"><i class="fas fa-trash-alt"></i></button>'
             + '</div>';
@@ -112,13 +112,13 @@ function updateGroupModeUI() {
     if (groupChatSettings.enabled) {
         pill.style.background = 'var(--accent-color)';
         knob.style.left = '22px';
-        status.textContent = '已开启 — 收到的消息随机显示成员';
+        status.textContent = '已启用 · 传讯将随机由小队成员署名';
         displaySection.style.display = 'block';
         membersSection.style.display = 'block';
     } else {
         pill.style.background = 'var(--border-color)';
         knob.style.left = '3px';
-        status.textContent = '已关闭 — 点击开启';
+        status.textContent = '尚未启用 · 点击开启';
         displaySection.style.display = 'none';
         membersSection.style.display = 'none';
     }
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.openAddGroupMember = function() {
     _groupMemberAvatarDataUrl = null;
-    document.getElementById('group-member-edit-title').textContent = '添加成员';
+    document.getElementById('group-member-edit-title').textContent = '邀请旅伴';
     document.getElementById('group-member-name-input').value = '';
     document.getElementById('group-member-edit-index').value = '';
     var preview = document.getElementById('group-member-avatar-preview');
@@ -187,7 +187,7 @@ window.openEditGroupMember = function(idx) {
     var member = groupChatSettings.members[idx];
     if (!member) return;
     _groupMemberAvatarDataUrl = member.avatar || null;
-    document.getElementById('group-member-edit-title').textContent = '编辑成员';
+    document.getElementById('group-member-edit-title').textContent = '编辑旅伴资料';
     document.getElementById('group-member-name-input').value = member.name || '';
     document.getElementById('group-member-edit-index').value = idx;
     var preview = document.getElementById('group-member-avatar-preview');
@@ -219,7 +219,7 @@ window.previewGroupMemberAvatar = function(input) {
 
 window.saveGroupMember = function() {
     var name = (document.getElementById('group-member-name-input').value || '').trim();
-    if (!name) { alert('请输入成员名字'); return; }
+    if (!name) { alert('请输入旅伴姓名'); return; }
     var idxVal = document.getElementById('group-member-edit-index').value;
     var member = { name: name, avatar: _groupMemberAvatarDataUrl };
     if (idxVal !== '') {

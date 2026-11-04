@@ -170,8 +170,8 @@ function renderOutboxList() {
     if (envelopeData.outbox.length === 0) {
         list.innerHTML = `<div class="env-empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-            <div style="font-size:14px;font-weight:500;margin-top:4px;">还没有寄出任何信件</div>
-            <div style="font-size:12px;margin-top:6px;opacity:0.6;">提笔写下心意，寄送给Ta吧~</div>
+            <div style="font-size:14px;font-weight:500;margin-top:4px;">还没有寄出旅信</div>
+            <div style="font-size:12px;margin-top:6px;opacity:0.6;">写下一封旅信，让心意越过山海。</div>
         </div>`;
         return;
     }
@@ -182,7 +182,7 @@ function renderOutboxList() {
         const statusIcon = isPending
             ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`
             : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-        const statusText = isPending ? `${statusIcon} 预计 ${replyTime} 回信` : `${statusIcon} 已收到回信`;
+        const statusText = isPending ? `${statusIcon} 预计 ${replyTime} 有回信` : `${statusIcon} 回信已抵达`;
         const preview = letter.content.length > 38 ? letter.content.substring(0, 38) + '…' : letter.content;
         return `
         <div class="env-letter-item" onclick="viewEnvLetter('outbox','${letter.id}')">
@@ -212,8 +212,8 @@ function renderInboxList() {
     if (envelopeData.inbox.length === 0) {
         list.innerHTML = `<div class="env-empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/><polyline points="22 13 12 13"/><path d="M19 16l-5-3-5 3"/></svg>
-            <div style="font-size:14px;font-weight:500;margin-top:4px;">还没有收到回信</div>
-            <div style="font-size:12px;margin-top:6px;opacity:0.6;">对方正在认真回复中，请稍候~</div>
+            <div style="font-size:14px;font-weight:500;margin-top:4px;">暂时还没有收到回信</div>
+            <div style="font-size:12px;margin-top:6px;opacity:0.6;">信使仍在路上，请稍候片刻。</div>
         </div>`;
         return;
     }
@@ -257,7 +257,7 @@ window.viewEnvLetter = function(section, id) {
     editingEnvId = id;
     editingEnvSection = section;
 
-    document.getElementById('env-view-title').textContent = section === 'outbox' ? '寄出的信' : '收到的回信';
+    document.getElementById('env-view-title').textContent = section === 'outbox' ? '寄出的旅信' : '收到的回信';
 
     const dateObj = letter.timestamp ? new Date(letter.timestamp) : new Date();
     const y = dateObj.getFullYear();
@@ -378,7 +378,7 @@ window.openNewEnvelopeForm = function() {
     document.getElementById('env-outbox-section').style.display = 'none';
     document.getElementById('env-inbox-section').style.display = 'none';
     document.getElementById('env-main-close-btn').style.display = 'none';
-    document.getElementById('env-compose-title').textContent = '写一封信';
+    document.getElementById('env-compose-title').textContent = '提笔写下旅信';
     document.getElementById('envelope-input').value = '';
     document.getElementById('env-send-to-chat').checked = false;
     document.getElementById('env-compose-form').style.display = 'block';

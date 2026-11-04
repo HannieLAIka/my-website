@@ -257,7 +257,7 @@
                 <button class="combo-tab-btn" data-tab="partner-sticker"><i class="fas fa-heart" style="font-size:10px;"></i> 对方</button>
                 <button class="combo-tab-btn" data-tab="poke">拍一拍</button>
                 <div style="margin-left:auto;display:flex;align-items:center;gap:4px;">
-                    <button id="sticker-add-btn" onclick="document.getElementById('my-sticker-quick-upload').click()" title="添加我的表情" style="background:var(--accent-color);border:none;cursor:pointer;padding:4px 10px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;border-radius:8px;transition:all 0.2s;box-shadow:0 2px 8px rgba(var(--accent-color-rgb),0.35);" onmouseover="this.style.opacity='0.85';this.style.transform='scale(1.05)'" onmouseout="this.style.opacity='1';this.style.transform='scale(1)'"><i class="fas fa-plus"></i> 添加</button>
+                    <button id="sticker-add-btn" onclick="document.getElementById('my-sticker-quick-upload').click()" title="添加我的表情" style="background:var(--accent-color);border:none;cursor:pointer;padding:4px 10px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;border-radius:8px;transition:all 0.2s;box-shadow:0 2px 8px rgba(var(--accent-color-rgb),0.35);" onmouseover="this.style.opacity='0.85';this.style.transform='scale(1.05)'" onmouseout="this.style.opacity='1';this.style.transform='scale(1)'"><i class="fas fa-plus"></i> 添加我的表情</button>
                     <button onclick="window.openMyStickerSettings()" title="管理表情库" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:var(--text-secondary);font-size:12px;display:flex;align-items:center;gap:3px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(var(--accent-color-rgb),0.12)';this.style.color='var(--accent-color)'" onmouseout="this.style.background='none';this.style.color='var(--text-secondary)'"><i class="fas fa-cog"></i></button>
                 </div>
             </div>
@@ -328,18 +328,18 @@
                 <path d="M1 29 L14 18" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
                 <path d="M39 29 L26 18" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
             </svg>
-            <div class="env-header-title">信 封 投 递</div>
-            <div class="env-header-subtitle">Letters · Correspondence</div>
+            <div class="env-header-title">旅 途 信 使</div>
+            <div class="env-header-subtitle">Letters · Across the Journey</div>
         </div>
 
         <div class="env-body">
             <div class="env-tab-bar">
                 <button class="env-tab-btn active" id="env-tab-outbox" onclick="switchEnvTab('outbox')">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>寄出的信
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>寄出旅信
                     <span id="env-outbox-badge" class="env-badge" style="display:none;"></span>
                 </button>
                 <button class="env-tab-btn" id="env-tab-inbox" onclick="switchEnvTab('inbox')">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px;"><path d="M22 13V19a2 2 0 01-2 2H4a2 2 0 01-2-2v-6"/><polyline points="15 3 21 3 21 9"/><line x1="21" y1="3" x2="10" y2="14"/></svg>收到的信
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px;"><path d="M22 13V19a2 2 0 01-2 2H4a2 2 0 01-2-2v-6"/><polyline points="15 3 21 3 21 9"/><line x1="21" y1="3" x2="10" y2="14"/></svg>收到回信
                     <span id="env-inbox-badge" class="env-badge" style="display:none;"></span>
                 </button>
             </div>
@@ -356,13 +356,13 @@
                 <div class="env-compose-paper">
                     <div class="env-compose-heading">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        <span id="env-compose-title">写一封信</span>
+                        <span id="env-compose-title">提笔写下旅信</span>
                     </div>
-                    <textarea id="envelope-input" placeholder="亲爱的，&#10;&#10;今天想跟你说..."></textarea>
+                    <textarea id="envelope-input" placeholder="写给远方的旅伴：&#10;&#10;今天的旅途有些话，想与你分享……"></textarea>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:4px 0 6px; font-size:12px; padding: 0 2px;">
                     <input type="checkbox" id="env-send-to-chat" style="width:15px;height:15px; cursor:pointer; accent-color:var(--accent-color);">
-                    <label for="env-send-to-chat" style="cursor:pointer; color:var(--text-secondary);">同时发送到聊天记录</label>
+                    <label for="env-send-to-chat" style="cursor:pointer; color:var(--text-secondary);">同时抄送到传讯记录</label>
                 </div>
                 <div class="env-send-info">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -453,14 +453,14 @@
         </div>
 
         <div class="settings-section">
-            <div class="settings-section-title"><i class="fas fa-toggle-on"></i>群聊模式</div>
+            <div class="settings-section-title"><i class="fas fa-toggle-on"></i>小队传讯</div>
             <div id="group-mode-toggle" style="display:flex;align-items:center;gap:12px;background:var(--primary-bg);border:1px solid var(--border-color);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all 0.2s;">
                 <div style="width:36px;height:36px;border-radius:50%;background:rgba(var(--accent-color-rgb),0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <i id="group-mode-icon" class="fas fa-users" style="font-size:18px;color:var(--accent-color);"></i>
                 </div>
                 <div style="flex:1;">
-                    <div style="font-size:13px;font-weight:600;color:var(--text-primary);">群聊模式</div>
-                    <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;" id="group-mode-status">已关闭 — 点击开启</div>
+                    <div style="font-size:13px;font-weight:600;color:var(--text-primary);">启用小队传讯</div>
+                    <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;" id="group-mode-status">尚未启用 · 点击开启</div>
                 </div>
                 <div id="group-mode-pill" style="width:44px;height:24px;border-radius:24px;background:var(--border-color);position:relative;transition:background 0.3s;flex-shrink:0;">
                     <div id="group-mode-knob" style="position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left 0.25s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
@@ -469,11 +469,11 @@
         </div>
 
         <div class="settings-section" id="group-display-section" style="display:none;">
-            <div class="settings-section-title"><i class="fas fa-eye"></i>显示选项</div>
+            <div class="settings-section-title"><i class="fas fa-eye"></i>传讯显示</div>
             <div style="display:flex;flex-direction:column;gap:8px;">
                 <div id="group-show-name-toggle" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--primary-bg);border:1px solid var(--border-color);border-radius:10px;cursor:pointer;">
                     <i class="fas fa-tag" style="color:var(--accent-color);width:18px;"></i>
-                    <span style="flex:1;font-size:13px;">显示成员名称</span>
+                    <span style="flex:1;font-size:13px;">显示旅伴姓名</span>
                     <div id="group-show-name-pill" style="width:36px;height:20px;border-radius:20px;background:var(--accent-color);position:relative;transition:background 0.3s;">
                         <div id="group-show-name-knob" style="position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;right:3px;transition:right 0.25s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
                     </div>
@@ -483,8 +483,8 @@
 
         <div class="settings-section" id="group-members-section" style="display:none;">
             <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between;">
-                <span><i class="fas fa-users"></i>群成员</span>
-                <button onclick="openAddGroupMember()" class="modal-btn modal-btn-primary" style="padding:5px 12px;font-size:12px;"><i class="fas fa-plus"></i> 添加</button>
+                <span><i class="fas fa-users"></i>小队成员</span>
+                <button onclick="openAddGroupMember()" class="modal-btn modal-btn-primary" style="padding:5px 12px;font-size:12px;"><i class="fas fa-plus"></i> 邀请旅伴</button>
             </div>
             <div id="group-members-list" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;"></div>
         </div>
@@ -498,19 +498,19 @@
 <div class="modal" id="group-member-edit-modal" style="z-index:2200;">
     <div class="modal-content" style="max-width:320px;">
         <div class="modal-title">
-            <i class="fas fa-user-edit"></i><span id="group-member-edit-title">添加成员</span>
+            <i class="fas fa-user-edit"></i><span id="group-member-edit-title">邀请旅伴</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;padding:4px 0;">
             <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
                 <div id="group-member-avatar-preview" onclick="document.getElementById('group-member-avatar-input').click()" style="width:64px;height:64px;border-radius:50%;background:var(--primary-bg);border:2px dashed var(--border-color);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;">
                     <i class="fas fa-camera" style="font-size:20px;color:var(--text-secondary);"></i>
                 </div>
-                <span style="font-size:11px;color:var(--text-secondary);">点击上传头像</span>
+                <span style="font-size:11px;color:var(--text-secondary);">为旅伴选择一枚肖像</span>
                 <input type="file" id="group-member-avatar-input" accept="image/*" style="display:none;" onchange="previewGroupMemberAvatar(this)">
             </div>
             <div>
-                <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block;">成员名字</label>
-                <input type="text" id="group-member-name-input" placeholder="输入名字" maxlength="10" style="width:100%;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--primary-bg);color:var(--text-primary);font-size:14px;box-sizing:border-box;">
+                <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block;">旅伴姓名</label>
+                <input type="text" id="group-member-name-input" placeholder="写下旅伴的名字" maxlength="10" style="width:100%;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--primary-bg);color:var(--text-primary);font-size:14px;box-sizing:border-box;">
             </div>
         </div>
         <input type="hidden" id="group-member-edit-index">
@@ -1292,7 +1292,7 @@
                         <i class="fas fa-heart"></i><span>重要日</span>
                     </div>
                     <div class="settings-item" id="mood-function">
-                        <i class="fas fa-calendar-day"></i><span>心晴手账</span>
+                        <i class="fas fa-calendar-day"></i><span>心情手账</span>
                     </div>
                     <div class="settings-item" id="envelope-function">
                         <i class="fas fa-envelope-open-text"></i><span>信件投递</span>
@@ -1377,9 +1377,10 @@
             <div class="modal-title">
                 <i class="fas fa-comments"></i><span>旅伴与信笺</span>
             </div>
+            <div class="feature-intro"><i class="fas fa-map-marked-alt"></i><span>整理同行旅伴与不同旅途留下的传讯记录。</span></div>
             <div class="session-list" id="session-list"></div>
             <div class="modal-buttons" style="justify-content: space-between;">
-                <button class="modal-btn modal-btn-primary" id="create-new-session"><i class="fas fa-plus"></i> 新建会话</button>
+                <button class="modal-btn modal-btn-primary" id="create-new-session"><i class="fas fa-plus"></i> 开启新旅程</button>
                 <button class="modal-btn modal-btn-secondary" id="cancel-session">关闭</button>
             </div>
         </div>
@@ -1481,17 +1482,17 @@
        <div class="modal-content">
         <div class="mood-header-actions">
             <div class="modal-title" style="margin-bottom:0; border:none; padding:0;">
-                <i class="fas fa-book-open"></i><span>心晴手帐</span>
+                <i class="fas fa-book-open"></i><span>心情手账</span>
             </div>
             <div style="display:flex; gap:8px;">
                 <button class="view-switch-btn active" id="btn-view-calendar">
-                    <i class="fas fa-calendar-alt"></i> 日历
+                    <i class="fas fa-calendar-alt"></i> 旅途日历
                 </button>
                 <button class="view-switch-btn" id="btn-view-stats">
-                    <i class="fas fa-chart-pie"></i> 统计
+                    <i class="fas fa-chart-pie"></i> 心情回顾
                 </button>
                 <button class="view-switch-btn" id="btn-view-trash">
-                    <i class="fas fa-recycle"></i> 回收站
+                    <i class="fas fa-recycle"></i> 整理箱
                 </button>
             </div>
         </div>
@@ -1517,8 +1518,8 @@
         </div>
     
         <div class="modal-buttons">
-            <button class="modal-btn modal-btn-secondary" id="mood-export-btn" style="flex:1;">导出</button>
-            <button class="modal-btn modal-btn-secondary" id="mood-import-btn" style="flex:1;">导入</button>
+            <button class="modal-btn modal-btn-secondary" id="mood-export-btn" style="flex:1;"><i class="fas fa-file-export"></i> 导出札记</button>
+            <button class="modal-btn modal-btn-secondary" id="mood-import-btn" style="flex:1;"><i class="fas fa-file-import"></i> 导入札记</button>
             <input type="file" id="mood-import-file-input" accept="application/json" style="display:none;">
             <button class="modal-btn modal-btn-secondary" id="close-mood">关闭</button>
         </div>
@@ -1531,7 +1532,7 @@
             
             <div id="mood-edit-target-tabs" style="display:flex; gap:6px; justify-content:center; margin:8px 0 4px;">
                 <button class="mood-tab-btn active" id="mood-tab-me" onclick="switchMoodEditTarget('me')" data-name-me>我的记录</button>
-                <button class="mood-tab-btn" id="mood-tab-partner" onclick="switchMoodEditTarget('partner')" data-name-partner>梦角的记录</button>
+                <button class="mood-tab-btn" id="mood-tab-partner" onclick="switchMoodEditTarget('partner')" data-name-partner>旅伴的记录</button>
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; margin:8px 0 4px;">
@@ -1642,21 +1643,21 @@
             <div class="modal-sidebar">
                 <button class="sidebar-btn active" data-major="reply">
                     <i class="fas fa-comment-dots"></i>
-                    <span>回复库</span>
+                    <span>传讯字卡</span>
                 </button>
                 <button class="sidebar-btn" data-major="atmosphere">
                     <i class="fas fa-magic"></i>
-                    <span>氛围感</span>
+                    <span>旅途氛围</span>
                 </button>
                 <button class="sidebar-btn" data-major="announcement" onclick="switchToAnnouncementPanel()">
                     <i class="fas fa-newspaper"></i>
-                    <span>公告</span>
+                    <span>营地札记</span>
                 </button>
             </div>
     
             <div class="modal-main-view">
                 <div class="modal-title" style="padding: 15px 20px; font-size: 16px;">
-                    <i class="fas fa-layer-group"></i> <span id="cr-modal-title">内容管理</span>
+                    <i class="fas fa-layer-group"></i> <span id="cr-modal-title">字卡与旅途文案</span>
                 </div>
     
                 <div class="reply-tabs" id="cr-sub-tabs">

@@ -148,18 +148,18 @@ function renderStatsContent() {
         function renderSessionList() {
             const listContainer = DOMElements.sessionModal.list;
             if (sessionList.length === 0) {
-                listContainer.innerHTML = '<div class="stats-empty" style="padding: 20px 0;"><p>还没有会话</p></div>';
+                listContainer.innerHTML = '<div class="stats-empty" style="padding: 20px 0;"><i class="fas fa-map-marked-alt"></i><p>这段旅途还没有留下记录</p></div>';
                 return;
             }
             listContainer.innerHTML = sessionList.map(session => `
             <div class="session-item ${session.id === SESSION_ID ? 'active': ''}" data-id="${session.id}">
             <div class="session-info">
-            <div class="session-name">${session.name}</div>
-            <div class="session-meta">创建于 ${new Date(session.createdAt).toLocaleDateString()}</div>
+            <div class="session-name"><i class="fas fa-bookmark session-current-mark" aria-hidden="true"></i>${session.name}</div>
+            <div class="session-meta"><i class="far fa-calendar-alt" aria-hidden="true"></i> 始于 ${new Date(session.createdAt).toLocaleDateString()}</div>
             </div>
             <div class="session-actions">
-            <button class="session-action-btn rename" title="重命名"><i class="fas fa-pen"></i></button>
-            <button class="session-action-btn delete" title="删除"><i class="fas fa-trash"></i></button>
+            <button class="session-action-btn rename" title="为旅程重新命名" aria-label="为旅程重新命名"><i class="fas fa-pen"></i></button>
+            <button class="session-action-btn delete" title="删除这段旅程" aria-label="删除这段旅程"><i class="fas fa-trash"></i></button>
             </div>
             </div>
             `).join('');
