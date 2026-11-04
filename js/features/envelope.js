@@ -416,6 +416,6 @@ function handleSendEnvelope() {
 
     cancelEnvelopeCompose();
     switchEnvTab('outbox');
-    showNotification(`信件已寄出，预计 ${Math.floor(randomHours)} 小时后收到回信 ✉️`, 'success');
+    showNotification(`信笺已封缄寄出，预计 ${Math.floor(randomHours)} 小时后收到旅伴回信 ✉️`, 'success');
 }
 
