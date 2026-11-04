@@ -10949,3 +10949,120 @@ html[data-color-theme="forest"] .modal-content {
 html[data-color-theme="forest"] button:not(.modal-btn-danger):not(.danger-btn):not(.delete-btn) {
     accent-color: var(--accent-color);
 }
+
+
+/* ===== D&D correspondence interface · Batch 2 ===== */
+:root {
+    --radius: 16px;
+    --radius-sm: 12px;
+    --radius-xs: 8px;
+}
+html[data-color-theme="forest"] body {
+    background-image:
+        radial-gradient(ellipse at 8% 12%, rgba(119, 132, 83, .13), transparent 38%),
+        radial-gradient(ellipse at 92% 84%, rgba(153, 119, 68, .11), transparent 42%),
+        linear-gradient(135deg, rgba(239, 230, 207, .18), transparent 55%);
+}
+html[data-color-theme="forest"] .header {
+    position: relative;
+    border-bottom: 1px solid rgba(112, 91, 55, .28);
+    box-shadow: 0 5px 18px rgba(48, 43, 29, .10);
+}
+html[data-color-theme="forest"] .header::after {
+    content: "";
+    position: absolute;
+    left: 7%; right: 7%; bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(151, 119, 67, .55), transparent);
+    pointer-events: none;
+}
+html[data-color-theme="forest"] .header-motto {
+    min-height: 15px;
+    font-family: Georgia, 'Noto Serif SC', serif;
+    letter-spacing: 2.2px;
+    color: #796747;
+    opacity: .82;
+}
+html[data-theme="dark"][data-color-theme="forest"] .header-motto { color: #c6b58e; }
+.realm-caption { font-size: 9px; }
+html[data-color-theme="forest"] .username {
+    font-family: 'Noto Serif SC', serif;
+    letter-spacing: .5px;
+}
+html[data-color-theme="forest"] .status {
+    border: 1px solid rgba(var(--accent-color-rgb), .24);
+    background: rgba(var(--accent-color-rgb), .08);
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+html[data-color-theme="forest"] .action-btn {
+    border: 1px solid rgba(var(--accent-color-rgb), .16);
+    background: rgba(255, 252, 242, .28);
+}
+html[data-theme="dark"][data-color-theme="forest"] .action-btn {
+    background: rgba(255,255,255,.035);
+}
+html[data-color-theme="forest"] .main-chat-area {
+    background-image: radial-gradient(ellipse at center, rgba(255,255,255,.13), transparent 72%);
+}
+html[data-color-theme="forest"] .chat-container {
+    padding-top: 30px;
+    padding-bottom: 34px;
+}
+html[data-color-theme="forest"] .message {
+    border: 1px solid rgba(105, 86, 54, .12);
+    box-shadow: 0 4px 12px rgba(54, 45, 29, .075);
+    letter-spacing: .1px;
+}
+html[data-color-theme="forest"] .message-received {
+    background: linear-gradient(145deg, #f5f0e3, #ebe3d1);
+    color: #34372c;
+    border-bottom-left-radius: 5px;
+}
+html[data-theme="dark"][data-color-theme="forest"] .message-received {
+    background: linear-gradient(145deg, #354034, #2d382e);
+    color: #e8e4d7;
+    border-color: rgba(198, 181, 142, .13);
+}
+html[data-color-theme="forest"] .message-sent {
+    background: linear-gradient(145deg, #647a52, #526b45);
+    color: #fffdf4;
+    border-bottom-right-radius: 5px;
+    border-color: rgba(40, 58, 34, .18);
+}
+html[data-theme="dark"][data-color-theme="forest"] .message-sent {
+    background: linear-gradient(145deg, #71865b, #596f49);
+}
+html[data-color-theme="forest"] .input-area-wrapper {
+    background: linear-gradient(180deg, rgba(235, 228, 210, .96), #e5dcc7);
+    border-top: 1px solid rgba(112, 91, 55, .28);
+    box-shadow: 0 -6px 24px rgba(50, 43, 29, .09);
+    backdrop-filter: blur(12px);
+}
+html[data-theme="dark"][data-color-theme="forest"] .input-area-wrapper {
+    background: linear-gradient(180deg, rgba(43, 54, 43, .97), #263126);
+    border-top-color: rgba(198, 181, 142, .2);
+}
+html[data-color-theme="forest"] .message-input {
+    background: rgba(255, 252, 242, .72);
+    border: 1px solid rgba(112, 91, 55, .22);
+    border-radius: 12px;
+    box-shadow: inset 0 1px 3px rgba(55, 45, 29, .06);
+}
+html[data-theme="dark"][data-color-theme="forest"] .message-input {
+    background: rgba(17, 25, 18, .48);
+    border-color: rgba(198, 181, 142, .2);
+}
+html[data-color-theme="forest"] .send-btn {
+    border-radius: 12px;
+    box-shadow: 0 3px 9px rgba(47, 65, 38, .22);
+}
+html[data-color-theme="forest"] .empty-state p:first-of-type {
+    font-family: 'Noto Serif SC', serif;
+    letter-spacing: 1.5px;
+}
+@media (max-width: 480px) {
+    .realm-caption { font-size: 8px; letter-spacing: 1.6px; }
+    html[data-color-theme="forest"] .chat-container { padding-left: 12px; padding-right: 12px; }
+    html[data-color-theme="forest"] .input-area { gap: 7px; padding: 10px 11px; }
+}
