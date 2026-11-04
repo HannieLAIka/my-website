@@ -257,7 +257,7 @@ window.viewEnvLetter = function(section, id) {
     editingEnvId = id;
     editingEnvSection = section;
 
-    document.getElementById('env-view-title').textContent = section === 'outbox' ? '寄出的信' : '收到的回信';
+    document.getElementById('env-view-title').textContent = section === 'outbox' ? '寄出的信' : '旅伴回信';
 
     const dateObj = letter.timestamp ? new Date(letter.timestamp) : new Date();
     const y = dateObj.getFullYear();
@@ -378,7 +378,7 @@ window.openNewEnvelopeForm = function() {
     document.getElementById('env-outbox-section').style.display = 'none';
     document.getElementById('env-inbox-section').style.display = 'none';
     document.getElementById('env-main-close-btn').style.display = 'none';
-    document.getElementById('env-compose-title').textContent = '写一封信';
+    document.getElementById('env-compose-title').textContent = '执笔寄信';
     document.getElementById('envelope-input').value = '';
     document.getElementById('env-send-to-chat').checked = false;
     document.getElementById('env-compose-form').style.display = 'block';
