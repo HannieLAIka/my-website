@@ -97,11 +97,11 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button id="session-manager-btn" class="action-btn" title="旅伴与信笺"><i class="fas fa-comments"></i></button>
-                <button id="group-chat-btn" class="action-btn" title="冒险小队"><i class="fas fa-users"></i></button>
-                <button id="daily-greeting-btn" class="action-btn" title="营地札记" onclick="reopenDailyGreeting()"><i class="fas fa-newspaper"></i></button>
-                <button id="theme-toggle" class="action-btn" title="切换主题"><i class="fas fa-moon"></i></button>
-                <button id="settings-btn" class="action-btn" title="营地与传讯设置"><i class="fas fa-cog"></i></button>
+                <button id="session-manager-btn" class="action-btn" title="旅伴与信笺" aria-label="旅伴与信笺"><i class="fas fa-comments" aria-hidden="true"></i><span class="action-btn-label">旅伴与信笺</span></button>
+                <button id="group-chat-btn" class="action-btn" title="冒险小队" aria-label="冒险小队"><i class="fas fa-users" aria-hidden="true"></i><span class="action-btn-label">冒险小队</span></button>
+                <button id="daily-greeting-btn" class="action-btn" title="营地札记" aria-label="营地札记" onclick="reopenDailyGreeting()"><i class="fas fa-newspaper" aria-hidden="true"></i><span class="action-btn-label">营地札记</span></button>
+                <button id="theme-toggle" class="action-btn" title="切换主题" aria-label="切换主题"><i class="fas fa-moon" aria-hidden="true"></i><span class="action-btn-label">主题</span></button>
+                <button id="settings-btn" class="action-btn" title="营地与传讯设置" aria-label="营地与传讯设置"><i class="fas fa-cog" aria-hidden="true"></i><span class="action-btn-label">营地设置</span></button>
             </div>
              <div class="user-info">
                 <div class="username" id="my-name">
@@ -238,18 +238,18 @@
         </div>
         <div class="input-area">
     <button id="collapse-expand-btn" title="展开更多" style="display:none;width:36px;height:36px;border:none;border-radius:50%;cursor:pointer;background:rgba(var(--accent-color-rgb),0.12);color:var(--accent-color);font-size:14px;transition:all 0.25s;flex-shrink:0;align-items:center;justify-content:center;" onclick="window.toggleCollapsedExtras && window.toggleCollapsedExtras()"><i class="fas fa-chevron-up"></i></button>
-    <button class="attachment-btn input-btn collapse-hideable" id="attachment-btn" title="附上图像"><i class="fas fa-image"></i></button>
+    <button class="attachment-btn input-btn collapse-hideable" id="attachment-btn" title="附上图像" aria-label="附上图像"><i class="fas fa-image" aria-hidden="true"></i><span class="input-btn-label">图像</span></button>
     
-    <button class="combo-btn input-btn collapse-hideable" id="combo-btn" title="表情 & 拍一拍">
-        <i class="fas fa-laugh-beam"></i>
+    <button class="combo-btn input-btn collapse-hideable" id="combo-btn" title="表情 & 拍一拍" aria-label="表情与拍一拍">
+        <i class="fas fa-laugh-beam" aria-hidden="true"></i><span class="input-btn-label">表情</span>
     </button>
 
     <textarea class="message-input" id="message-input" placeholder="" rows="1"></textarea>
     
     <div class="input-buttons">
-    <button class="continue-btn input-btn" id="continue-btn" title="继续传讯"><i class="fas fa-ellipsis-h"></i></button>
-        <button class="batch-btn input-btn collapse-hideable" id="batch-btn" title="批量发送模式"><i class="fas fa-layer-group"></i></button>
-        <button class="send-btn input-btn" id="send-btn" title="发送信笺"><i class="fas fa-paper-plane"></i></button>
+    <button class="continue-btn input-btn" id="continue-btn" title="继续传讯" aria-label="继续传讯"><i class="fas fa-ellipsis-h" aria-hidden="true"></i><span class="input-btn-label">继续</span></button>
+        <button class="batch-btn input-btn collapse-hideable" id="batch-btn" title="批量发送模式" aria-label="批量发送模式"><i class="fas fa-layer-group" aria-hidden="true"></i><span class="input-btn-label">批量</span></button>
+        <button class="send-btn input-btn" id="send-btn" title="发送信笺" aria-label="发送信笺"><i class="fas fa-paper-plane" aria-hidden="true"></i><span class="input-btn-label">发送</span></button>
         
         <div class="sticker-picker-popover" id="user-sticker-picker">
             <div class="combo-tabs-header">
@@ -449,7 +449,7 @@
 <div class="modal" id="group-chat-modal">
     <div class="modal-content">
         <div class="modal-title">
-            <i class="fas fa-users"></i><span>群聊设置</span>
+            <i class="fas fa-users"></i><span>冒险小队</span>
         </div>
 
         <div class="settings-section">
@@ -524,31 +524,31 @@
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <div class="modal-title">
-                <i class="fas fa-cog"></i><span>设置</span>
+                <i class="fas fa-cog"></i><span>营地与传讯设置</span>
             </div>
 
             <div class="settings-grid">
                 <div class="settings-card" id="appearance-settings">
                     <i class="fas fa-palette"></i>
-                    <span>外观设置</span>
+                    <span>外观与营地</span>
                 </div>
                 <div class="settings-card" id="chat-settings">
                     <i class="fas fa-comments"></i>
-                    <span>聊天设置</span>
+                    <span>传讯规则</span>
                 </div>
                 <div class="settings-card" id="advanced-settings">
                     <i class="fas fa-tools"></i>
-                    <span>高级功能</span>
+                    <span>冒险工具</span>
                 </div>
                 <div class="settings-card" id="data-settings">
                     <i class="fas fa-database"></i>
-                    <span>数据管理</span>
+                    <span>档案与备份</span>
                 </div>
             </div>
 
 
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-secondary" id="cancel-settings">关闭</button>
+                <button class="modal-btn modal-btn-secondary" id="cancel-settings">返回营地</button>
             </div>
         </div>
     </div>
@@ -1375,7 +1375,7 @@
     <div class="modal" id="session-modal">
         <div class="modal-content">
             <div class="modal-title">
-                <i class="fas fa-comments"></i><span>会话管理</span>
+                <i class="fas fa-comments"></i><span>旅伴与信笺</span>
             </div>
             <div class="session-list" id="session-list"></div>
             <div class="modal-buttons" style="justify-content: space-between;">
@@ -2062,7 +2062,7 @@
                     <div class="dg-main-title" id="dg-title">早上好</div>
                 </div>
             </div>
-            <div class="dg-date-stamp" id="dg-date-stamp">— 今日公告已送达 —</div>
+            <div class="dg-date-stamp" id="dg-date-stamp">— 营地札记已送达 —</div>
         </div>
         <div class="dg-body">
             <div class="dg-section-label" id="dg-section-label-partner">梦角今日状态</div>
