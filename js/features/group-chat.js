@@ -219,7 +219,7 @@ window.previewGroupMemberAvatar = function(input) {
 
 window.saveGroupMember = function() {
     var name = (document.getElementById('group-member-name-input').value || '').trim();
-    if (!name) { alert('请输入成员名字'); return; }
+    if (!name) { alert('请输入队员名字'); return; }
     var idxVal = document.getElementById('group-member-edit-index').value;
     var member = { name: name, avatar: _groupMemberAvatarDataUrl };
     if (idxVal !== '') {
@@ -234,7 +234,7 @@ window.saveGroupMember = function() {
 };
 
 window.deleteGroupMember = function(idx) {
-    if (!confirm('确定删除该成员吗？')) return;
+    if (!confirm('确定移除该队员吗？')) return;
     groupChatSettings.members.splice(idx, 1);
     saveGroupChatSettings();
     renderGroupMembersList();
