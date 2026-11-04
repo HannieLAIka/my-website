@@ -214,8 +214,8 @@ const tourSteps = [
     },
     {
         element: '#continue-btn',
-        title: "让 Ta 继续说",
-        content: "不知道说什么了？或者想让 Ta 多说几句？<br><br>点击这个按钮，<b>梦角会主动找你说话。",
+        title: "继续传讯",
+        content: "想让对方继续回应当前对话？<br><br>点击这个按钮，即可请求对方继续传讯。",
         position: 'top'
     },
     {
@@ -226,7 +226,7 @@ const tourSteps = [
     },
     {
         element: '#settings-btn',
-        title: "⚙️ 设置中心",
+        title: "⚙️ 营地与传讯设置",
         content: "所有个性化配置都在这个<b>设置按钮</b>里，我们点进去看一下！<br>",
         position: 'bottom',
         onBefore: () => { if (isTourActive) document.querySelectorAll('.modal').forEach(m => hideModal(m)); }
@@ -271,8 +271,8 @@ const tourSteps = [
     },
     {
         element: '#session-manager-btn',
-        title: "📂 会话管理",
-        content: "你可以创建<b>多个独立的聊天会话</b>，每个会话都有独立的聊天记录。<br>",
+        title: "📜 旅伴与信笺",
+        content: "你可以创建<b>多个独立的传讯会话</b>，每个会话都有独立的记录。<br>",
         position: 'bottom'
     },
     {

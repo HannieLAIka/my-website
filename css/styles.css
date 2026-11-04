@@ -11096,37 +11096,29 @@ html[data-theme="dark"] .message-input {
 
 
 /* ============================================================
-   MILK D&D · PHASE 2 / VISIBLE CONTROL LABELS
-   Labels are visible on touch screens; title remains as a fallback.
-   No control IDs or event bindings are changed.
+   MILK D&D · PHASE 2 / ICON-ONLY HEADER CONTROLS
+   Header feature names are shown inside their opened panels, not beneath icons.
+   Tooltips and aria-labels remain available as secondary labels.
    ============================================================ */
 .header .header-actions {
     flex: 1 1 auto;
     min-width: 0;
-    gap: clamp(2px, .7vw, 8px);
+    gap: clamp(3px, .8vw, 9px);
 }
 .header .action-btn {
-    width: auto;
+    width: 42px;
     min-width: 42px;
     height: 42px;
-    padding: 5px 6px 4px;
+    padding: 0;
     border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    flex: 0 1 54px;
-    font-size: 15px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    font-size: 16px;
 }
-.action-btn-label {
-    display: block;
-    font-size: 9px;
-    line-height: 1.1;
-    letter-spacing: .02em;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    text-align: center;
-    color: inherit;
-}
+.header .action-btn-label { display: none !important; }
 .input-btn-label { display: none; }
 #settings-modal .modal-title span { letter-spacing: .04em; }
 
@@ -11146,18 +11138,17 @@ html[data-theme="dark"] .message-input {
     .header .header-actions {
         flex: 1 1 auto;
         justify-content: space-evenly;
-        gap: 1px;
+        gap: 2px;
     }
     .header .action-btn {
-        min-width: 0;
-        width: auto;
-        height: 42px;
-        padding: 4px 2px 3px;
-        flex: 1 1 0;
+        min-width: 34px;
+        width: 34px;
+        height: 38px;
+        padding: 0;
+        flex: 0 1 38px;
         border-radius: 8px;
         font-size: 14px;
     }
-    .action-btn-label { font-size: 7px; letter-spacing: 0; line-height: 1.05; }
     .input-area {
         gap: 5px;
         padding: 8px 7px;
@@ -11193,8 +11184,7 @@ html[data-theme="dark"] .message-input {
 @media (max-width: 360px) {
     .header .user-info { min-width: 32px; flex-basis: 32px; }
     .header .avatar { width: 32px; height: 32px; }
-    .header .action-btn { padding-left: 1px; padding-right: 1px; }
-    .action-btn-label { font-size: 6.5px; line-height: 1.05; }
+    .header .action-btn { min-width: 31px; width: 31px; flex-basis: 31px; }
     .input-area { gap: 3px; padding-left: 5px; padding-right: 5px; }
     .input-area .input-btn { width: 35px; min-width: 35px; }
     .input-btn-label { font-size: 7px; }

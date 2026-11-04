@@ -1361,7 +1361,7 @@ window.switchToAnnouncementPanel = function() {
     if (annPanel) { annPanel.style.display = 'block'; annPanel.scrollTop = 0; }
     if (toolbar) toolbar.style.display = 'none';
     if (addBtn) addBtn.style.display = 'none';
-    if (titleEl) titleEl.textContent = '今日公告配置';
+    if (titleEl) titleEl.textContent = '营地札记配置';
     var customData = {};
     try { customData = JSON.parse(localStorage.getItem('dg_custom_data') || '{}'); } catch(e2) {}
     var titleInput = document.getElementById('dg-edit-title');
@@ -1515,7 +1515,10 @@ window.updateDynamicNames = function() {
         if (deletePartnerBtn) deletePartnerBtn.textContent = '删除' + pName;
 
         var continueBtn = document.getElementById('continue-btn');
-        if (continueBtn) continueBtn.title = '让' + pName + '继续说';
+        if (continueBtn) {
+            continueBtn.title = '继续传讯';
+            continueBtn.setAttribute('aria-label', '继续传讯');
+        }
 
         var envInfo = document.querySelector('.env-send-info');
         if (envInfo) {
