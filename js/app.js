@@ -61,22 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setInterval(checkStatusChange, 60000);
 
-        if (disclaimerModal) {
-            const tourSeen = await safeAwait(localforage?.getItem(APP_PREFIX + 'tour_seen'), false);
-            
-            if (!tourSeen) {
-                showModal(disclaimerModal);
-                
-                if (acceptDisclaimerBtn && !acceptDisclaimerBtn._bound) {
-                    acceptDisclaimerBtn._bound = true;
-                    acceptDisclaimerBtn.addEventListener('click', () => {
-                        hideModal(disclaimerModal);
-                        localforage?.setItem(APP_PREFIX + 'tour_seen', true).catch(() => {});
-                        startTour?.();
-                    }, { once: true });
-                }
-            }
-        }
+        // D&D 改造：不再首次启动时强制弹出声明或自动播放新手教程。
+        // 原声明与教程入口保留在页面/设置中，用户可按需主动查看。
 
         updateLoader('连接成功，欢迎回来。', '100%');
         setTimeout(hideWelcomeScreen, 3500);

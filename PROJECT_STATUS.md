@@ -42,8 +42,10 @@
 - 本文档是当前审查阶段的工作记录，不替代源码与实际运行测试。
 
 
-## 2026-11-04 — Phase 2, Batch 1
-- Added a restrained forest / parchment visual foundation through CSS-only overrides.
-- Updated light and dark palette tokens, header, message surfaces, input area, and modal surfaces.
-- No HTML structure, element IDs, JavaScript, storage keys, or reply behavior changed.
-- Next: inspect screenshots on desktop/mobile, then refine page-specific components before changing terminology.
+## 阶段 1 · 第一批改动（D&D 视觉基础与启动流程）
+
+- 移除了启动时强制阅读的七页声明与逐字输入承诺页面。
+- 移除了首次启动时自动弹出的声明窗口及自动播放的新手教程；教程代码和手动入口保留。
+- 默认主题改为森林绿，并加入羊皮纸、木质暖色调的浅色/深色基础配色。
+- 本批未改动字卡抽取、回复概率、回复延迟、消息存储、备份格式及数据键规则。
+- 涉及文件：`index.html`、`js/onboarding.js`、`js/app.js`、`js/core.js`、`css/styles.css`。

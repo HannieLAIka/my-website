@@ -142,7 +142,7 @@ function loadMoreHistory() {
                 myStatus: "在线",
                 partnerStatus: "在线",
                 isDarkMode: false,
-                colorTheme: "gold",
+                colorTheme: "forest",
                 soundEnabled: true,
                 typingIndicatorEnabled: true,
                 readReceiptsEnabled: true,
