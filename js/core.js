@@ -444,7 +444,7 @@ const loadData = async () => {
 
 const LIBRARY_CONFIG = {
     reply: {
-        title: "回复库管理",
+        title: "字卡与氛围典藏",
         tabs: [
             { id: 'custom', name: '主字卡', mode: 'list' },
             { id: 'emojis', name: 'Emoji', mode: 'grid' },
@@ -452,12 +452,12 @@ const LIBRARY_CONFIG = {
         ]
     },
     atmosphere: {
-        title: "氛围感配置",
+        title: "旅途氛围典藏",
         tabs: [
-            { id: 'pokes', name: '拍一拍', mode: 'list' },
-            { id: 'statuses', name: '对方状态', mode: 'list' },
-            { id: 'mottos', name: '顶部格言', mode: 'list' },
-            { id: 'intros', name: '开场动画', mode: 'list' }
+            { id: 'pokes', name: '互动印记', mode: 'list' },
+            { id: 'statuses', name: '旅伴状态', mode: 'list' },
+            { id: 'mottos', name: '旅途箴言', mode: 'list' },
+            { id: 'intros', name: '启程仪式', mode: 'list' }
         ]
     }
 };

@@ -86,7 +86,7 @@ function renderGroupMembersList() {
     var list = document.getElementById('group-members-list');
     if (!list) return;
     if (!groupChatSettings.members || groupChatSettings.members.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">暂无成员，点击添加按钮添加</div>';
+        list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">队伍暂时空缺，点击「添加队员」邀请旅伴加入</div>';
         return;
     }
     list.innerHTML = groupChatSettings.members.map(function(m, i) {
@@ -112,13 +112,13 @@ function updateGroupModeUI() {
     if (groupChatSettings.enabled) {
         pill.style.background = 'var(--accent-color)';
         knob.style.left = '22px';
-        status.textContent = '已开启 — 收到的消息随机显示成员';
+        status.textContent = '已启用 — 来信将随机署上队员名';
         displaySection.style.display = 'block';
         membersSection.style.display = 'block';
     } else {
         pill.style.background = 'var(--border-color)';
         knob.style.left = '3px';
-        status.textContent = '已关闭 — 点击开启';
+        status.textContent = '已关闭 — 点击启用';
         displaySection.style.display = 'none';
         membersSection.style.display = 'none';
     }
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.openAddGroupMember = function() {
     _groupMemberAvatarDataUrl = null;
-    document.getElementById('group-member-edit-title').textContent = '添加成员';
+    document.getElementById('group-member-edit-title').textContent = '添加队员';
     document.getElementById('group-member-name-input').value = '';
     document.getElementById('group-member-edit-index').value = '';
     var preview = document.getElementById('group-member-avatar-preview');
@@ -187,7 +187,7 @@ window.openEditGroupMember = function(idx) {
     var member = groupChatSettings.members[idx];
     if (!member) return;
     _groupMemberAvatarDataUrl = member.avatar || null;
-    document.getElementById('group-member-edit-title').textContent = '编辑成员';
+    document.getElementById('group-member-edit-title').textContent = '编辑队员';
     document.getElementById('group-member-name-input').value = member.name || '';
     document.getElementById('group-member-edit-index').value = idx;
     var preview = document.getElementById('group-member-avatar-preview');
@@ -219,7 +219,7 @@ window.previewGroupMemberAvatar = function(input) {
 
 window.saveGroupMember = function() {
     var name = (document.getElementById('group-member-name-input').value || '').trim();
-    if (!name) { alert('请输入成员名字'); return; }
+    if (!name) { alert('请输入队员名字'); return; }
     var idxVal = document.getElementById('group-member-edit-index').value;
     var member = { name: name, avatar: _groupMemberAvatarDataUrl };
     if (idxVal !== '') {
@@ -234,7 +234,7 @@ window.saveGroupMember = function() {
 };
 
 window.deleteGroupMember = function(idx) {
-    if (!confirm('确定删除该成员吗？')) return;
+    if (!confirm('确定移除该队员吗？')) return;
     groupChatSettings.members.splice(idx, 1);
     saveGroupChatSettings();
     renderGroupMembersList();
