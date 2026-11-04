@@ -728,7 +728,7 @@ async function importMoodBackupFile(file) {
     }
 
     if (!data || typeof data !== 'object') {
-        showNotification('导入文件无效', 'error');
+        showNotification('旅途手账档案无效', 'error');
         return;
     }
 
@@ -829,7 +829,7 @@ function _showMoodImportPicker(data) {
             overlay.remove();
         } catch (err) {
             console.error('旅途手账导入失败:', err);
-            showNotification('导入失败', 'error');
+            showNotification('旅途手账导入失败', 'error');
         }
     };
 
