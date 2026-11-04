@@ -702,11 +702,11 @@ function exportMoodBackup() {
         };
         const fileName = `mood-backup-${new Date().toISOString().slice(0, 10)}.json`;
         exportDataToMobileOrPC(JSON.stringify(payload, null, 2), fileName);
-        showNotification('✓ 心晴手账已导出', 'success');
+        showNotification('✓ 旅途手账已导出', 'success');
         if (typeof playSound === 'function') playSound('export');
     } catch (e) {
-        console.error('心晴手账导出失败:', e);
-        showNotification('心晴手账导出失败', 'error');
+        console.error('旅途手账导出失败:', e);
+        showNotification('旅途手账导出失败', 'error');
     }
 }
 
@@ -741,7 +741,7 @@ function _showMoodImportPicker(data) {
     const hasTrash = Array.isArray(data.moodTrash);
 
     if (!hasCalendar && !hasCustom && !hasTrash) {
-        showNotification('文件不包含可导入的心晴手账数据', 'error');
+        showNotification('文件中没有可载入的旅途手账记录', 'error');
         return;
     }
 
@@ -757,7 +757,7 @@ function _showMoodImportPicker(data) {
             padding:16px 18px env(safe-area-inset-bottom,0);
         ">
             <div style="width:36px;height:4px;border-radius:2px;background:var(--border-color);margin:0 auto 14px;"></div>
-            <div style="font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:10px;">选择导入内容</div>
+            <div style="font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:10px;">选择要载入的旅途记录</div>
             <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 12px;border:1.5px solid var(--border-color);border-radius:16px;background:var(--primary-bg);margin-bottom:10px;opacity:${hasCalendar ? 1 : 0.45};">
                 <span style="font-size:13px;font-weight:700;color:var(--text-primary);">心情日历</span>
                 <input type="checkbox" id="mood-imp-cal" ${hasCalendar ? 'checked' : ''} ${hasCalendar ? '' : 'disabled'} style="transform:scale(1.1); accent-color:var(--accent-color);">
@@ -828,7 +828,7 @@ function _showMoodImportPicker(data) {
             if (typeof playSound === 'function') playSound('import');
             overlay.remove();
         } catch (err) {
-            console.error('心晴手账导入失败:', err);
+            console.error('旅途手账导入失败:', err);
             showNotification('导入失败', 'error');
         }
     };
