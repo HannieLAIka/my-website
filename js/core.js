@@ -444,7 +444,7 @@ const loadData = async () => {
 
 const LIBRARY_CONFIG = {
     reply: {
-        title: "字卡与氛围典藏",
+        title: "回复库管理",
         tabs: [
             { id: 'custom', name: '主字卡', mode: 'list' },
             { id: 'emojis', name: 'Emoji', mode: 'grid' },
@@ -452,12 +452,12 @@ const LIBRARY_CONFIG = {
         ]
     },
     atmosphere: {
-        title: "旅途氛围典藏",
+        title: "氛围感配置",
         tabs: [
-            { id: 'pokes', name: '互动印记', mode: 'list' },
-            { id: 'statuses', name: '旅伴状态', mode: 'list' },
-            { id: 'mottos', name: '旅途箴言', mode: 'list' },
-            { id: 'intros', name: '启程仪式', mode: 'list' }
+            { id: 'pokes', name: '拍一拍', mode: 'list' },
+            { id: 'statuses', name: '对方状态', mode: 'list' },
+            { id: 'mottos', name: '顶部格言', mode: 'list' },
+            { id: 'intros', name: '开场动画', mode: 'list' }
         ]
     }
 };
@@ -1641,7 +1641,7 @@ if (partnerPersonas && partnerPersonas.length > 0 && Math.random() < 0.3) {
 
             const replyCount = Math.random() < 0.75 ? 1: (Math.random() < 0.95 ? 2: 3);
             if (!customReplies || customReplies.length === 0) {
-                showNotification('字卡典藏暂时为空，请先添加一些可供传讯的字卡。', 'info', 3500);
+                showNotification('回复库为空，请先到「自定义回复」中添加内容', 'info', 3500);
                 return;
             }
             const disabledItemsOnce = (() => {
