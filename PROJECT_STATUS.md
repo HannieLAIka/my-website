@@ -40,3 +40,10 @@
 - GitHub Pages 的仓库子路径部署需要核验资源路径。
 - 备份恢复过程存在逐项写入的实现方式；未来测试恢复功能时必须使用测试数据和独立浏览器环境，不能拿唯一真实数据试验。
 - 本文档是当前审查阶段的工作记录，不替代源码与实际运行测试。
+
+
+## 2026-11-04 — Phase 2, Batch 1
+- Added a restrained forest / parchment visual foundation through CSS-only overrides.
+- Updated light and dark palette tokens, header, message surfaces, input area, and modal surfaces.
+- No HTML structure, element IDs, JavaScript, storage keys, or reply behavior changed.
+- Next: inspect screenshots on desktop/mobile, then refine page-specific components before changing terminology.

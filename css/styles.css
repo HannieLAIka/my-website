@@ -10871,3 +10871,165 @@
             border-color: var(--accent-color) !important;
             outline: none;
         }
+
+/* =========================================================
+   MILK D&D VISUAL FOUNDATION — Phase 2 / Batch 1
+   Safe visual overrides only. No HTML IDs or JS behavior changed.
+   ========================================================= */
+:root {
+    --primary-bg: #e9e4d6;
+    --secondary-bg: #f5f0e4;
+    --text-primary: #29352b;
+    --text-secondary: #777967;
+    --border-color: rgba(77, 86, 61, 0.22);
+    --header-bg: rgba(235, 230, 215, 0.96);
+    --input-area-bg: rgba(235, 230, 215, 0.97);
+    --accent-color: #60764b;
+    --accent-color-dark: #405638;
+    --accent-color-rgb: 96, 118, 75;
+    --message-sent-bg: #647a50;
+    --message-sent-text: #fbf7e9;
+    --message-received-bg: #f4efdf;
+    --message-received-text: #30382d;
+    --shadow: 0 8px 24px rgba(48, 53, 38, 0.10);
+    --radius: 16px;
+    --radius-sm: 12px;
+    --radius-xs: 8px;
+    --focus-ring-color: rgba(96, 118, 75, 0.34);
+}
+
+html[data-theme="dark"] {
+    --primary-bg: #202820;
+    --secondary-bg: #293329;
+    --text-primary: #e7e3d4;
+    --text-secondary: #a5a48e;
+    --border-color: rgba(194, 184, 145, 0.20);
+    --header-bg: rgba(35, 46, 36, 0.97);
+    --input-area-bg: rgba(35, 46, 36, 0.98);
+    --message-received-bg: #303c30;
+    --message-received-text: #e7e3d4;
+    --message-sent-bg: #61784c;
+    --message-sent-text: #fffbea;
+    --accent-color: #9caf79;
+    --accent-color-dark: #b5c58e;
+    --accent-color-rgb: 156, 175, 121;
+    --primary-bg-rgb: 32, 40, 32;
+    --secondary-bg-rgb: 41, 51, 41;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+body {
+    letter-spacing: 0.01em;
+}
+
+body::before {
+    background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(var(--accent-color-rgb), 0.10), transparent 62%),
+        linear-gradient(135deg, rgba(119, 102, 66, 0.035), transparent 45%),
+        var(--chat-bg-image, linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0)));
+}
+
+.header {
+    opacity: 1;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 3px 14px rgba(44, 49, 35, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.header-motto {
+    color: var(--accent-color);
+    letter-spacing: 0.16em;
+}
+
+.username {
+    color: var(--text-primary);
+    letter-spacing: 0.035em;
+}
+
+.action-btn,
+.toolbar-btn,
+.sidebar-btn {
+    border: 1px solid var(--border-color);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.action-btn:hover,
+.toolbar-btn:hover,
+.sidebar-btn:hover {
+    border-color: rgba(var(--accent-color-rgb), 0.52);
+    background-color: rgba(var(--accent-color-rgb), 0.10);
+}
+
+.chat-container {
+    padding-top: 28px;
+    padding-bottom: 30px;
+}
+
+.message {
+    box-shadow: 0 3px 10px rgba(43, 48, 34, 0.07);
+    border: 1px solid rgba(78, 85, 61, 0.10);
+}
+
+.message-sent {
+    background: var(--message-sent-bg);
+    border-color: rgba(255, 255, 255, 0.10);
+}
+
+.message-received {
+    background: var(--message-received-bg);
+    border-color: var(--border-color);
+}
+
+.input-area-wrapper {
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -5px 18px rgba(45, 49, 35, 0.055);
+}
+
+.input-area {
+    border-top: 0;
+}
+
+.message-input {
+    border: 1px solid var(--border-color);
+    background: var(--secondary-bg);
+}
+
+.message-input:focus {
+    border-color: rgba(var(--accent-color-rgb), 0.72);
+    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.12);
+}
+
+.modal-content,
+.settings-card,
+.stats-search-box,
+.search-result-item {
+    border-color: var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.modal-content {
+    background-color: var(--secondary-bg);
+}
+
+.modal-title,
+.settings-card-title {
+    letter-spacing: 0.035em;
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+@media (max-width: 600px) {
+    .chat-container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    .header {
+        box-shadow: 0 2px 10px rgba(44, 49, 35, 0.07);
+    }
+}
