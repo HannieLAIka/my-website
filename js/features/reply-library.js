@@ -8,11 +8,11 @@ function _getGroupCtx(tab) {
     tab = tab || currentSubTab;
     if (tab === 'pokes') {
         if (!window.customPokeGroups) window.customPokeGroups = [];
-        return { groups: window.customPokeGroups, items: customPokes, itemLabel: '拍一拍' };
+        return { groups: window.customPokeGroups, items: customPokes, itemLabel: '互动印记' };
     }
     if (tab === 'statuses') {
         if (!window.customStatusGroups) window.customStatusGroups = [];
-        return { groups: window.customStatusGroups, items: customStatuses, itemLabel: '状态' };
+        return { groups: window.customStatusGroups, items: customStatuses, itemLabel: '旅伴状态' };
     }
     // default: custom replies
     if (!window.customReplyGroups) window.customReplyGroups = [];
@@ -1407,15 +1407,15 @@ function _showExportUI() {
 
     const modules = [
         { id: '_re_replies',  icon: ICONS.comment,   label: '主字卡',        count: customReplies.length,                     key: 'customReplies' },
-        { id: '_re_pokes',    icon: ICONS.hand,      label: '拍一拍',        count: customPokes.length,                       key: 'customPokes' },
-        { id: '_re_statuses', icon: ICONS.dot,       label: '对方状态',      count: customStatuses.length,                    key: 'customStatuses' },
-        { id: '_re_mottos',   icon: ICONS.quote,     label: '顶部格言',      count: customMottos.length,                      key: 'customMottos' },
-        { id: '_re_intros',   icon: ICONS.play,      label: '开场动画',      count: customIntros.length,                      key: 'customIntros' },
+        { id: '_re_pokes',    icon: ICONS.hand,      label: '互动印记',        count: customPokes.length,                       key: 'customPokes' },
+        { id: '_re_statuses', icon: ICONS.dot,       label: '旅伴状态',      count: customStatuses.length,                    key: 'customStatuses' },
+        { id: '_re_mottos',   icon: ICONS.quote,     label: '旅途箴言',      count: customMottos.length,                      key: 'customMottos' },
+        { id: '_re_intros',   icon: ICONS.play,      label: '启程仪式',      count: customIntros.length,                      key: 'customIntros' },
         { id: '_re_emojis',   icon: ICONS.smile,     label: 'Emoji 库',      count: customEmojis.length,                      key: 'customEmojis' },
         { id: '_re_ann',      icon: ICONS.folderBig, label: '营地札记配置',  count: _annTotalCount,                           key: 'announcementConfig' },
         { id: '_re_groups',   icon: ICONS.folderBig, label: '字卡分组',      count: (customReplyGroups||[]).length,            key: 'customReplyGroups',  extra: true },
-        { id: '_re_pokg',     icon: ICONS.folderBig, label: '拍一拍分组',    count: (window.customPokeGroups||[]).length,     key: 'customPokeGroups',   extra: true },
-        { id: '_re_statg',    icon: ICONS.folderBig, label: '对方状态分组',  count: (window.customStatusGroups||[]).length,   key: 'customStatusGroups', extra: true },
+        { id: '_re_pokg',     icon: ICONS.folderBig, label: '互动印记分组',    count: (window.customPokeGroups||[]).length,     key: 'customPokeGroups',   extra: true },
+        { id: '_re_statg',    icon: ICONS.folderBig, label: '旅伴状态分组',  count: (window.customStatusGroups||[]).length,   key: 'customStatusGroups', extra: true },
     ];
 
     // 检测当前 tab 决定哪个分组有「按分组导出」选项
@@ -1437,8 +1437,8 @@ function _showExportUI() {
 
     const groupDescMap = {
         replies:      '仅导出指定分组的字卡内容',
-        pokes:        '仅导出指定分组的拍一拍内容',
-        statuses:     '仅导出指定分组的对方状态内容',
+        pokes:        '仅导出指定分组的互动印记',
+        statuses:     '仅导出指定分组的旅伴状态',
         announcement: '选择要导出的公告内容模块',
     };
 
@@ -1553,8 +1553,8 @@ function _showGroupExportPicker(type) {
 
     const cfgMap = {
         replies:  { groups: window.customReplyGroups  || [], items: customReplies,   groupKey: 'customReplyGroups',  itemKey: 'customReplies',  moduleTag: ['replies','groups'],       filePrefix: 'reply-groups',  label: '字卡',    successUnit: '条字卡' },
-        pokes:    { groups: window.customPokeGroups   || [], items: customPokes,      groupKey: 'customPokeGroups',   itemKey: 'customPokes',    moduleTag: ['pokes','pokeGroups'],     filePrefix: 'poke-groups',   label: '拍一拍',  successUnit: '条拍一拍' },
-        statuses: { groups: window.customStatusGroups || [], items: customStatuses,   groupKey: 'customStatusGroups', itemKey: 'customStatuses', moduleTag: ['statuses','statusGroups'],filePrefix: 'status-groups', label: '对方状态',successUnit: '条状态' },
+        pokes:    { groups: window.customPokeGroups   || [], items: customPokes,      groupKey: 'customPokeGroups',   itemKey: 'customPokes',    moduleTag: ['pokes','pokeGroups'],     filePrefix: 'poke-groups',   label: '互动印记',  successUnit: '条拍一拍' },
+        statuses: { groups: window.customStatusGroups || [], items: customStatuses,   groupKey: 'customStatusGroups', itemKey: 'customStatuses', moduleTag: ['statuses','statusGroups'],filePrefix: 'status-groups', label: '旅伴状态',successUnit: '条状态' },
     };
     const cfg = cfgMap[type] || cfgMap.replies;
 
@@ -1749,17 +1749,17 @@ function _showImportUI(data) {
 
     const modules = [
         { id: '_ri_replies',  icon: ICONS.comment,   label: '主字卡',        data: data.customReplies,       key: 'customReplies' },
-        { id: '_ri_pokes',    icon: ICONS.hand,      label: '拍一拍',        data: data.customPokes,         key: 'customPokes' },
-        { id: '_ri_statuses', icon: ICONS.dot,       label: '对方状态',      data: data.customStatuses,      key: 'customStatuses' },
-        { id: '_ri_mottos',   icon: ICONS.quote,     label: '顶部格言',      data: data.customMottos,        key: 'customMottos' },
-        { id: '_ri_intros',   icon: ICONS.play,      label: '开场动画',      data: data.customIntros,        key: 'customIntros' },
+        { id: '_ri_pokes',    icon: ICONS.hand,      label: '互动印记',        data: data.customPokes,         key: 'customPokes' },
+        { id: '_ri_statuses', icon: ICONS.dot,       label: '旅伴状态',      data: data.customStatuses,      key: 'customStatuses' },
+        { id: '_ri_mottos',   icon: ICONS.quote,     label: '旅途箴言',      data: data.customMottos,        key: 'customMottos' },
+        { id: '_ri_intros',   icon: ICONS.play,      label: '启程仪式',      data: data.customIntros,        key: 'customIntros' },
         { id: '_ri_emojis',   icon: ICONS.smile,     label: 'Emoji 库',      data: data.customEmojis,        key: 'customEmojis' },
         { id: '_ri_ann',      icon: ICONS.folderBig, label: '营地札记配置',  data: [_annCfg],                key: 'announcementConfig',    displayCount: _annCfgCount },
         { id: '_ri_anntext',  icon: ICONS.comment,   label: '札记文案',      data: [_annText],               key: 'announcementText',      displayCount: _annTextCount },
         { id: '_ri_annpool',  icon: ICONS.dot,       label: '状态随机库',    data: _annPool,                 key: 'announcementStatusPool', displayCount: _annPoolCount },
         { id: '_ri_groups',   icon: ICONS.folderBig, label: '字卡分组',      data: data.customReplyGroups,   key: 'customReplyGroups',  extra: true },
-        { id: '_ri_pokg',     icon: ICONS.folderBig, label: '拍一拍分组',    data: data.customPokeGroups,    key: 'customPokeGroups',   extra: true },
-        { id: '_ri_statg',    icon: ICONS.folderBig, label: '对方状态分组',  data: data.customStatusGroups,  key: 'customStatusGroups', extra: true },
+        { id: '_ri_pokg',     icon: ICONS.folderBig, label: '互动印记分组',    data: data.customPokeGroups,    key: 'customPokeGroups',   extra: true },
+        { id: '_ri_statg',    icon: ICONS.folderBig, label: '旅伴状态分组',  data: data.customStatusGroups,  key: 'customStatusGroups', extra: true },
     ].filter(m => m.data !== undefined && m.data !== null && (Array.isArray(m.data) ? m.data.length > 0 && m.data[0] !== undefined : true));
 
     _showIOSheet(`导入字卡`, `文件中包含 ${modules.length} 个模块`, modules, ICONS.import, (selected, mode) => {
