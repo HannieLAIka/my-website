@@ -21,7 +21,7 @@
 
         +   '<div class="dm-storage-card">'
         +     '<div class="dm-storage-header">'
-        +       '<span class="dm-storage-title"><i class="fas fa-database" style="margin-right:5px;opacity:0.55"></i>档案容量</span>'
+        +       '<span class="dm-storage-title"><i class="fas fa-box-archive" style="margin-right:5px;opacity:0.65"></i>档案容量</span>'
         +       '<span class="dm-storage-label" id="dm-storage-total">计算中…</span>'
         +     '</div>'
         +     '<div class="dm-stats-grid">'
@@ -32,7 +32,7 @@
         +     '<div class="dm-progress-track"><div class="dm-progress-fill" id="dm-storage-bar" style="width:0%"></div></div>'
         +   '</div>'
 
-        +   '<div class="dm-section-label"><i class="fas fa-cloud-upload-alt"></i> 行囊备份与恢复</div>'
+        +   '<div class="dm-section-label"><i class="fas fa-box-open"></i> 行囊备份与恢复</div>'
         +   '<div class="dm-grid">'
         +     '<div class="dm-tile" id="dm-tile-full-backup">'
         +       '<div class="dm-tile-icon blue"><i class="fas fa-layer-group"></i></div>'

@@ -11189,3 +11189,80 @@ html[data-theme="dark"] .message-input {
     .input-area .input-btn { width: 35px; min-width: 35px; }
     .input-btn-label { font-size: 7px; }
 }
+
+
+/* ============================================================
+   MILK D&D · PHASE 3 / ADVENTURER'S FIELD JOURNAL
+   Settings hub and its first-level panels only. Functional layout
+   and control states remain owned by the original styles/scripts.
+   ============================================================ */
+#settings-modal .modal-content,
+#appearance-modal .modal-content,
+#chat-modal .modal-content,
+#advanced-modal .modal-content,
+#data-modal .modal-content {
+    background-color: #eee3c9;
+    background-image:
+        radial-gradient(ellipse at 12% 8%, rgba(255,255,255,.48), transparent 42%),
+        repeating-linear-gradient(0deg, rgba(111,83,48,.025) 0, rgba(111,83,48,.025) 1px, transparent 1px, transparent 4px);
+    border: 1px solid rgba(111, 83, 48, .34);
+    box-shadow: 0 18px 48px rgba(30, 37, 26, .28), inset 0 0 0 4px rgba(255,255,255,.13);
+}
+#settings-modal .modal-title,
+#appearance-modal .modal-title,
+#advanced-modal .modal-title {
+    color: #354936;
+    padding-bottom: 13px;
+    border-bottom: 1px solid rgba(111, 83, 48, .25);
+}
+#settings-modal .modal-title i,
+#appearance-modal .modal-title i,
+#advanced-modal .modal-title i {
+    color: #9a7138;
+}
+#settings-modal .settings-grid { gap: 12px; }
+#settings-modal .settings-card {
+    min-height: 104px;
+    border: 1px solid rgba(112, 86, 51, .32);
+    border-radius: 13px;
+    background: linear-gradient(145deg, rgba(255,250,235,.86), rgba(220,207,176,.78));
+    box-shadow: 0 3px 8px rgba(65, 54, 35, .09), inset 0 1px rgba(255,255,255,.75);
+    color: #3c4938;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+#settings-modal .settings-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(151, 112, 54, .65);
+    box-shadow: 0 7px 15px rgba(65, 54, 35, .14);
+}
+#settings-modal .settings-card i {
+    color: #8b6a38;
+    text-shadow: 0 1px rgba(255,255,255,.7);
+}
+#settings-modal .settings-card span { color: #394b39; font-weight: 650; }
+#advanced-modal .settings-section-title {
+    color: #536044;
+    border-bottom-color: rgba(111, 83, 48, .24);
+}
+#advanced-modal .settings-item-list .settings-item {
+    background: rgba(255, 250, 236, .68);
+    border: 1px solid rgba(112, 86, 51, .2);
+    border-radius: 10px;
+    color: #3d4939;
+}
+#advanced-modal .settings-item-list .settings-item > i { color: #92703d; }
+#chat-modal .cs-header-title { color: #3b4b39; }
+#chat-modal .cs-header-icon { color: #98713b; }
+#data-modal .dm-topbar {
+    background: linear-gradient(135deg, #405640, #293e32);
+    border-bottom: 1px solid rgba(169, 135, 76, .55);
+}
+#data-modal .dm-topbar-title { letter-spacing: .06em; }
+#data-modal .dm-storage-card,
+#data-modal .dm-tile,
+#data-modal .dm-row-card {
+    border-color: rgba(112, 86, 51, .28);
+}
+@media (max-width: 600px) {
+    #settings-modal .settings-card { min-height: 92px; }
+}
