@@ -455,6 +455,12 @@ async function importAllData(file) {
                 localStorageNeedles: []
             },
             {
+                id: 'events',
+                label: '旅途见闻 / 事件图鉴',
+                indexedDBNeedles: ['travelerKeepsake', 'eventTemplates', 'eventCategories', 'observations'],
+                localStorageNeedles: []
+            },
+            {
                 id: 'mood',
                 label: '心晴手账',
                 indexedDBNeedles: ['moodCalendar', 'customMoodOptions', 'moodTrash'],

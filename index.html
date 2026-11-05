@@ -1441,6 +1441,67 @@
         </div>
     </div>
 
+    <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-event-form-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-form-content">
+            <div class="modal-title"><i class="fas fa-eye"></i><span id="traveler-keepsake-event-form-title">添加事件</span></div>
+            <form id="traveler-keepsake-event-form" novalidate>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-title">事件名称 <span>*</span></label>
+                <input class="modal-input" id="traveler-keepsake-event-title" name="title" maxlength="100" required placeholder="例如：林间发现罕见草药">
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-content">事件内容 <span>*</span></label>
+                <textarea class="modal-textarea traveler-keepsake-event-textarea" id="traveler-keepsake-event-content" name="content" maxlength="2000" required placeholder="写下这件事可能如何发生"></textarea>
+                <div class="traveler-event-placeholder-hint">可用占位符：<code>{角色名}</code> 当前聊天对象 · <code>{我}</code> 当前用户 <span id="traveler-event-preview"></span></div>
+                <div class="traveler-keepsake-form-grid">
+                    <div><label class="traveler-keepsake-form-label" for="traveler-keepsake-event-participants">内容联动</label><select class="modal-input" id="traveler-keepsake-event-participants" name="participants"><option value="daily">日常内容</option><option value="character">与聊天对象角色联动</option><option value="user">与用户联动</option><option value="both">双方同时联动</option></select></div>
+                    <div><label class="traveler-keepsake-form-label" for="traveler-keepsake-event-category-id">事件类别</label><select class="modal-input" id="traveler-keepsake-event-category-id" name="categoryId"></select></div>
+                </div>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-weight">出现权重</label><select class="modal-input" id="traveler-keepsake-event-weight" name="weight"><option value="common">常见</option><option value="normal" selected>普通</option><option value="rare">罕见</option></select>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-tags">事件标签 <span class="traveler-keepsake-optional">（用逗号分隔）</span></label>
+                <input class="modal-input" id="traveler-keepsake-event-tags" name="tags" maxlength="300" placeholder="森林，采集">
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-cooldown">冷却天数</label>
+                <input class="modal-input" type="number" id="traveler-keepsake-event-cooldown" name="cooldownDays" min="0" step="1" value="0">
+                <label class="traveler-keepsake-event-enabled"><input type="checkbox" id="traveler-keepsake-event-enabled" name="enabled" checked><span>启用此事件词条</span></label>
+                <div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="cancel-traveler-keepsake-event-form">取消</button><button type="submit" class="modal-btn modal-btn-primary">保存事件</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-category-modal" aria-hidden="true"><div class="modal-content traveler-keepsake-form-content"><div class="modal-title"><i class="fas fa-tags"></i><span>管理事件类别</span></div><div id="traveler-keepsake-category-list"></div><div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="close-traveler-keepsake-category">关闭</button><button type="button" class="modal-btn modal-btn-primary" id="add-traveler-keepsake-category"><i class="fas fa-plus"></i> 添加类别</button></div></div></div>
+
+    <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-observation-form-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-form-content">
+            <div class="modal-title"><i class="fas fa-eye"></i><span id="traveler-keepsake-observation-form-title">记录一段见闻</span></div>
+            <form id="traveler-keepsake-observation-form" novalidate>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-observation-title">见闻标题 <span>*</span></label>
+                <input class="modal-input" id="traveler-keepsake-observation-title" name="title" maxlength="100" required placeholder="例如：雾林边缘的萤火">
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-observation-content">见闻正文 <span>*</span></label>
+                <textarea class="modal-textarea traveler-keepsake-observation-textarea" id="traveler-keepsake-observation-content" name="content" maxlength="5000" required placeholder="写下这段旅途中发生的事"></textarea>
+                <div class="traveler-keepsake-form-grid">
+                    <div><label class="traveler-keepsake-form-label" for="traveler-keepsake-observation-type">见闻类型</label><select class="modal-input" id="traveler-keepsake-observation-type" name="type"><option value="discovery">新的发现</option><option value="encounter">旅途遭遇</option><option value="conversation">交谈与对话</option><option value="scenery">沿途风景</option><option value="daily">日常片段</option><option value="other">其他</option></select></div>
+                    <div><label class="traveler-keepsake-form-label" for="traveler-keepsake-observation-date">发生日期</label><input class="modal-input" type="date" id="traveler-keepsake-observation-date" name="date" required></div>
+                </div>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-observation-chapter">所属篇章</label>
+                <select class="modal-input" id="traveler-keepsake-observation-chapter" name="chapterId"></select>
+                <div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="cancel-traveler-keepsake-observation-form">取消</button><button type="submit" class="modal-btn modal-btn-primary">保存见闻</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-observation-detail-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-form-content"><div class="modal-title"><i class="fas fa-eye"></i><span id="traveler-keepsake-observation-detail-title">旅途见闻</span></div><div id="traveler-keepsake-observation-detail-body" class="traveler-keepsake-observation-detail-body"></div><div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="close-traveler-keepsake-observation-detail">返回</button></div></div>
+    </div>
+
+    <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-event-form-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-form-content"><div class="modal-title"><i class="fas fa-dice-d20"></i><span id="traveler-keepsake-event-form-title">添加事件</span></div>
+            <form id="traveler-keepsake-event-form" novalidate>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-title">事件名称 <span>*</span></label><input class="modal-input" id="traveler-keepsake-event-title" name="title" maxlength="100" required placeholder="例如：林间发现一株罕见草药">
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-content">事件内容 <span>*</span></label><textarea class="modal-textarea traveler-keepsake-observation-textarea" id="traveler-keepsake-event-content" name="content" maxlength="5000" required placeholder="描述这件可能发生的事"></textarea>
+                <div class="traveler-keepsake-form-grid"><div><label class="traveler-keepsake-form-label" for="traveler-keepsake-event-category">事件类别</label><select class="modal-input" id="traveler-keepsake-event-category" name="category"><option value="character">哈尔辛独自经历</option><option value="companion">共同经历</option></select></div><div><label class="traveler-keepsake-form-label" for="traveler-keepsake-event-weight">出现权重</label><select class="modal-input" id="traveler-keepsake-event-weight" name="weight"><option value="common">常见</option><option value="normal" selected>普通</option><option value="rare">罕见</option></select></div></div>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-event-tags">事件标签 <span class="traveler-keepsake-optional">（用逗号分隔）</span></label><input class="modal-input" id="traveler-keepsake-event-tags" name="tags" maxlength="300" placeholder="森林，采集">
+                <div class="traveler-keepsake-form-grid"><div><label class="traveler-keepsake-form-label" for="traveler-keepsake-event-cooldown">冷却天数</label><input class="modal-input" type="number" id="traveler-keepsake-event-cooldown" name="cooldownDays" min="0" step="1" value="0"></div><div class="traveler-keepsake-event-toggle"><label class="traveler-keepsake-form-label">启用状态</label><label><input type="checkbox" id="traveler-keepsake-event-enabled" name="enabled" checked> 参与未来抽取</label></div></div>
+                <div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="cancel-traveler-keepsake-event-form">取消</button><button type="submit" class="modal-btn modal-btn-primary">保存事件</button></div>
+            </form>
+        </div>
+    </div>
+
     <div class="modal" id="fortune-lenormand-modal">
         <div class="modal-content fl-modal-content">
             <div class="fl-tab-bar">

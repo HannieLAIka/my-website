@@ -184,6 +184,7 @@
         if (!flags.inclSet) p.push('chatSettings', 'partnerPersonas', 'showPartnerNameInChat');
         if (!flags.inclCustom) p.push('customReplies', 'customPokes', 'customStatuses', 'customMottos', 'customIntros', 'customEmojis', 'customReplyGroups', 'customPokeGroups', 'customStatusGroups');
         if (!flags.inclAnn) p.push('anniversaries');
+        if (flags.inclEvents === false) p.push('eventTemplates', 'eventCategories', 'observations');
         if (!flags.inclThemes) p.push('customThemes', 'themeSchemes');
         if (!flags.inclDg) p.push('dg_custom_data', 'dg_status_pool', 'weekly_fortune', 'daily_fortune', 'customWeather_');
         return p;
@@ -499,6 +500,24 @@
             var lk = lfKeys[i];
             var targetKey = needRemap ? remapLfKey(lk, backupSid, curSid, appPfx) : lk;
             var val = inlineMediaTree(lfRaw[lk], mediaStore);
+            // travelerKeepsake is one object containing several collections.
+            // Selective event restore must merge only the event collections,
+            // never replace chapters or the other keepsake collections.
+            if (selective && opt.selectedCategoryIds && opt.selectedCategoryIds.indexOf('events') !== -1 &&
+                targetKey.indexOf('travelerKeepsake') !== -1 && val && typeof val === 'object') {
+                try {
+                    var existingKeepsake = await localforage.getItem(targetKey);
+                    if (existingKeepsake && typeof existingKeepsake === 'object') {
+                        val = Object.assign({}, existingKeepsake, {
+                            eventTemplates: Array.isArray(val.eventTemplates) ? val.eventTemplates : [],
+                            eventCategories: Array.isArray(val.eventCategories) ? val.eventCategories : [],
+                            observations: Array.isArray(val.observations) ? val.observations : []
+                        });
+                    }
+                } catch (mergeError) {
+                    console.warn('[backup] 事件数据合并读取失败，将按备份对象写入', mergeError);
+                }
+            }
             try {
                 await localforage.setItem(targetKey, val);
             } catch (e) {
