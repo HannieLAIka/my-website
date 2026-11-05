@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         updateLoader('正在读取记忆存档...', '40%');
         await safeAwait(loadData());
+        await safeAwait(window.checkTravelerDailyEvents?.());
 
         updateLoader('正在渲染我们的世界...', '70%');
         
@@ -60,6 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         ]);
 
         setInterval(checkStatusChange, 60000);
+        let travelerEventDay = new Date().toDateString();
+        setInterval(() => { const nowDay = new Date().toDateString(); if (nowDay !== travelerEventDay) { travelerEventDay = nowDay; window.checkTravelerDailyEvents?.(); } }, 60000);
 
         // D&D 改造：不再首次启动时强制弹出声明或自动播放新手教程。
         // 原声明与教程入口保留在页面/设置中，用户可按需主动查看。
@@ -82,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.error('[visibilitychange] 保存失败:', e);
                 }
             } else if (document.visibilityState === 'visible') {
+                try { window.checkTravelerDailyEvents?.(); } catch (e) { console.warn('[visibilitychange] 旅途见闻检查失败:', e); }
                 try {
                     const backup = typeof _tryRecoverFromBackup === 'function' ? _tryRecoverFromBackup() : null;
                     if (backup && Array.isArray(backup.messages) && backup.messages.length > 0 && Array.isArray(messages) && backup.messages.length > messages.length) {

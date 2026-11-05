@@ -10,7 +10,7 @@
     'use strict';
 
     const STORAGE_KEY = 'travelerKeepsake';
-    const CURRENT_VERSION = 4;
+    const CURRENT_VERSION = 5;
     const CHAPTER_COLLECTION = 'chapters';
     const COLLECTION_NAMES = [
         CHAPTER_COLLECTION,
@@ -58,6 +58,7 @@
         { id: 'event_system_magic_theory', title: '一场关于魔法的争论', content: '路过一座旧神殿时，{角色名}和{我}对门楣上的符号含义产生了不同猜测，直到一阵风让其中一块石片翻了面。', participants: 'both', categoryId: 'category_conversation', weight: 'normal', tags: ['魔法', '神殿'], cooldownDays: 6 },
         { id: 'event_system_druid_advice', title: '德鲁伊的天气建议', content: '一位路过的德鲁伊提醒旅人，山谷里的云影正在改变方向，并顺手分享了一个辨认晴雨的简单方法。', participants: 'daily', categoryId: 'category_conversation', weight: 'common', tags: ['德鲁伊', '天气'], cooldownDays: 4 }
     ];
+    const WEIGHT_VALUES = { common: 6, normal: 3, rare: 1 };
 
     function createDefaultTravelerKeepsake() {
         return {
@@ -70,6 +71,7 @@
             gifts: [],
             quotes: [],
             chronicles: []
+            ,eventGeneration: { lastCheckedDate: null }
         };
     }
 
@@ -83,7 +85,8 @@
             keepsakes: defaults.keepsakes.slice(),
             gifts: defaults.gifts.slice(),
             quotes: defaults.quotes.slice(),
-            chronicles: defaults.chronicles.slice()
+            chronicles: defaults.chronicles.slice(),
+            eventGeneration: { ...defaults.eventGeneration }
         };
     }
 
@@ -127,6 +130,8 @@
         COLLECTION_NAMES.forEach((name) => {
             if (!isValidCollection(normalized[name])) normalized[name] = [];
         });
+        if (!isPlainObject(normalized.eventGeneration)) normalized.eventGeneration = { lastCheckedDate: null };
+        if (typeof normalized.eventGeneration.lastCheckedDate !== 'string') normalized.eventGeneration.lastCheckedDate = null;
 
         // Normalize legacy template participant values without touching the
         // historical observations collection or their content snapshots.
@@ -160,6 +165,11 @@
         if (version < 4) {
             if (!Array.isArray(migrated.eventCategories)) migrated.eventCategories = [];
             migrated.version = 4;
+        }
+        if (version < 5) {
+            if (!isPlainObject(migrated.eventGeneration)) migrated.eventGeneration = { lastCheckedDate: null };
+            if (typeof migrated.eventGeneration.lastCheckedDate !== 'string') migrated.eventGeneration.lastCheckedDate = null;
+            migrated.version = 5;
         }
 
         if (migrated.version < CURRENT_VERSION) {
@@ -209,6 +219,79 @@
             }
         });
         return result;
+    }
+
+    function localDateKey(date) {
+        const d = date instanceof Date ? date : new Date(date || Date.now());
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+
+    function weightedPick(items) {
+        const total = items.reduce((sum, item) => sum + (WEIGHT_VALUES[item.weight] || 0), 0);
+        if (!total) return null;
+        let cursor = Math.random() * total;
+        for (const item of items) { cursor -= WEIGHT_VALUES[item.weight] || 0; if (cursor < 0) return item; }
+        return items[items.length - 1];
+    }
+
+    function chooseDailyCount() {
+        const roll = Math.random();
+        if (roll < 0.15) return 0;
+        if (roll < 0.60) return 1;
+        if (roll < 0.90) return 2;
+        return 3;
+    }
+
+    function replaceEventNames(text, settings) {
+        const partner = (settings && settings.partnerName) || '角色名';
+        const mine = (settings && settings.myName) || '我';
+        return String(text || '').replaceAll('{角色名}', partner).replaceAll('{我}', mine).replaceAll('{自己的名字}', mine);
+    }
+
+    function generateDailyEvents(data, date, settings) {
+        const normalized = migrateTravelerKeepsake(data);
+        const day = localDateKey(date);
+        if (normalized.eventGeneration.lastCheckedDate === day) return { data: normalized, generated: false, count: 0 };
+        const now = Date.now();
+        const candidates = normalized.eventTemplates.filter((item) => item && item.enabled !== false && ['daily', 'character', 'user', 'both'].includes(item.participants) && Object.prototype.hasOwnProperty.call(WEIGHT_VALUES, item.weight));
+        const eligible = candidates.filter((template) => {
+            const cooldown = Math.max(0, Number(template.cooldownDays) || 0);
+            if (!cooldown) return true;
+            return !normalized.observations.some((observation) => {
+                if (observation.templateId !== template.id || !observation.date) return false;
+                const then = new Date(`${observation.date}T00:00:00`);
+                const nowDay = new Date(`${day}T00:00:00`);
+                const days = Math.round((nowDay - then) / 86400000);
+                return days >= 0 && days <= cooldown;
+            });
+        });
+        const selected = [];
+        const target = Math.min(chooseDailyCount(), eligible.length);
+        let pool = eligible.slice();
+        while (selected.length < target && pool.length) { const picked = weightedPick(pool); if (!picked) break; selected.push(picked); pool = pool.filter((item) => item.id !== picked.id); }
+        selected.forEach((template) => normalized.observations.push({ id: generateTravelerKeepsakeId('observation'), templateId: template.id, date: day, occurredAt: now, title: replaceEventNames(template.title, settings), content: replaceEventNames(template.content, settings), participants: template.participants, categoryId: template.categoryId || null, tags: Array.isArray(template.tags) ? template.tags.slice() : [], createdAt: now }));
+        normalized.eventGeneration = { ...normalized.eventGeneration, lastCheckedDate: day };
+        return { data: normalized, generated: true, count: selected.length };
+    }
+
+    function generateActiveEvent(data, date, settings) {
+        const normalized = migrateTravelerKeepsake(data);
+        const day = localDateKey(date);
+        const candidates = normalized.eventTemplates.filter((item) => item && item.enabled !== false && ['daily', 'character', 'user', 'both'].includes(item.participants) && Object.prototype.hasOwnProperty.call(WEIGHT_VALUES, item.weight));
+        const eligible = candidates.filter((template) => {
+            const cooldown = Math.max(0, Number(template.cooldownDays) || 0);
+            return !cooldown || !normalized.observations.some((observation) => {
+                if (observation.templateId !== template.id || !observation.date) return false;
+                const days = Math.round((new Date(`${day}T00:00:00`) - new Date(`${observation.date}T00:00:00`)) / 86400000);
+                return days >= 0 && days <= cooldown;
+            });
+        });
+        const template = weightedPick(eligible);
+        if (!template) return { data: normalized, generated: false, count: 0 };
+        const now = Date.now();
+        normalized.observations.push({ id: generateTravelerKeepsakeId('observation'), templateId: template.id, date: day, occurredAt: now, title: replaceEventNames(template.title, settings), content: replaceEventNames(template.content, settings), participants: template.participants, categoryId: template.categoryId || null, tags: Array.isArray(template.tags) ? template.tags.slice() : [], createdAt: now });
+        return { data: normalized, generated: true, count: 1 };
     }
 
     /**
@@ -297,6 +380,8 @@
         getRecordsForChapter,
         removeChapterAndUnlinkRecords,
         initializeEventCatalog,
+        generateDailyEvents,
+        generateActiveEvent,
         getStorageKey: getTravelerKeepsakeStorageKey,
         generateId: generateTravelerKeepsakeId,
         load: loadTravelerKeepsake,

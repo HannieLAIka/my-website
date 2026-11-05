@@ -45,13 +45,15 @@
     let keepsakeData = null;
     let editingChapterId = null;
     let draftChapterCover = '';
+    let pendingObservationId = null;
     let editingEventId = null;
     let eventFilter = 'all';
     let eventCategoryFilter = 'all';
     let eventSearch = '';
 
     function todayString() {
-        return new Date().toISOString().slice(0, 10);
+        const date = new Date(); const pad = (n) => String(n).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     }
 
     function escapeHtml(value) {
@@ -63,6 +65,8 @@
         const date = new Date(`${value}T00:00:00`);
         return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('zh-CN');
     }
+    function localDayKey(value) { if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value; const date = new Date(value || Date.now()); const pad = (n) => String(n).padStart(2, '0'); return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
+    function formatHarptosDate(value) { const months = ['深冬月','霜融月','春芽月','花月','青草月','盛夏月','炎月','收获月','落叶月','霜落月','霜降月','寒冬月']; const key = localDayKey(value); const parts = key.split('-'); const month = Number(parts[1]); const day = Number(parts[2]); return `${months[month - 1] || '未知月'} ${day}日`; }
 
     function showKeepsakeError(error) {
         console.error('[travelerKeepsakeUI]', error);
@@ -78,6 +82,8 @@
             } else {
                 keepsakeData = catalogData;
             }
+            const daily = global.TravelerKeepsake.generateDailyEvents(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {});
+            if (daily.generated) keepsakeData = await global.TravelerKeepsake.save(daily.data);
             return keepsakeData;
         } catch (error) {
             keepsakeData = null;
@@ -85,6 +91,16 @@
             return null;
         }
     }
+
+    global.checkTravelerDailyEvents = async function () {
+        try {
+            const data = await global.TravelerKeepsake.load();
+            const daily = global.TravelerKeepsake.generateDailyEvents(data, new Date(), typeof settings !== 'undefined' ? settings : {});
+            if (daily.generated) await global.TravelerKeepsake.save(daily.data);
+            if (keepsakeData && daily.generated) { keepsakeData = daily.data; if (activeSection === 'observations') renderObservationsMain(); }
+            return daily;
+        } catch (error) { showKeepsakeError(error); return null; }
+    };
 
     function chapterRecordsCount(chapterId) {
         return ['observations', 'keepsakes', 'gifts', 'quotes', 'chronicles'].reduce((total, name) => total + global.TravelerKeepsake.getRecordsForChapter(keepsakeData, name, chapterId).length, 0);
@@ -195,13 +211,17 @@
         if (!panel || !keepsakeData) return;
         const observations = Array.isArray(keepsakeData.observations) ? keepsakeData.observations : [];
         const today = todayString();
-        const todayItems = observations.filter((item) => String(item.occurredAt || item.date || '').slice(0, 10) === today);
+        const todayItems = observations.filter((item) => localDayKey(item.date || item.occurredAt) === today).slice().sort((a, b) => Number(b.occurredAt || b.createdAt || 0) - Number(a.occurredAt || a.createdAt || 0));
         const older = observations.filter((item) => !todayItems.includes(item)).slice().sort((a, b) => Number(b.occurredAt || b.createdAt || 0) - Number(a.occurredAt || a.createdAt || 0));
-        const renderItems = (items) => items.map((item) => `<article class="traveler-observation-card"><div class="traveler-observation-date">${formatDate(item.occurredAt || item.date)}</div><div><h3>${escapeHtml(item.title || '未命名见闻')}</h3><p>${escapeHtml(item.content || '')}</p></div></article>`).join('');
-        panel.innerHTML = `<div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-eye"></i></div><div><h2>旅途见闻</h2><p>记录已经发生的相遇、意外与沿途故事。事件图鉴只保存未来可能发生的模板。</p></div></div><div class="traveler-observation-actions"><button type="button" class="modal-btn modal-btn-secondary" id="open-traveler-event-catalog"><i class="fas fa-book-atlas"></i> 事件图鉴</button></div><section class="traveler-observation-section"><h3>今日见闻</h3>${renderItems(todayItems) || '<div class="traveler-observation-empty">今日还没有新的见闻。每一次相遇与意外，都可能成为值得珍藏的故事。</div>'}</section><section class="traveler-observation-section"><h3>往日见闻</h3>${renderItems(older) || '<div class="traveler-observation-empty">旅途还没有留下往日记录。</div>'}</section>`;
+        const renderItems = (items) => items.map((item) => `<article class="traveler-observation-card"><div class="traveler-observation-date"><strong>${formatHarptosDate(item.date || item.occurredAt)}</strong><small>${escapeHtml(item.date || localDayKey(item.occurredAt))}</small></div><div class="traveler-observation-body"><h3>${escapeHtml(item.title || '未命名见闻')}</h3><p>${escapeHtml(item.content || '')}</p></div><button type="button" class="traveler-observation-bookmark ${item.chapterId ? 'is-saved' : ''}" data-observation-id="${escapeHtml(item.id)}" aria-label="收藏至篇章"><i class="far fa-bookmark"></i></button></article>`).join('');
+        panel.innerHTML = `<div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-eye"></i></div><div><h2>旅途见闻</h2><p>记录已经发生的相遇、意外与沿途故事。事件图鉴只保存未来可能发生的模板。</p></div></div><div class="traveler-observation-actions"><button type="button" class="modal-btn modal-btn-primary" id="explore-unknown"><i class="fas fa-compass"></i> 探索未知</button><button type="button" class="modal-btn modal-btn-secondary" id="open-traveler-event-catalog"><i class="fas fa-book-atlas"></i> 事件图鉴</button></div><section class="traveler-observation-section"><h3>今日见闻</h3>${renderItems(todayItems) || '<div class="traveler-observation-empty">今日还没有新的见闻。每一次相遇与意外，都可能成为值得珍藏的故事。</div>'}</section><section class="traveler-observation-section"><h3>往日见闻</h3>${renderItems(older) || '<div class="traveler-observation-empty">旅途还没有留下往日记录。</div>'}</section>`;
         document.querySelectorAll('.traveler-keepsake-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.keepsakeSection === 'observations'));
         document.getElementById('open-traveler-event-catalog')?.addEventListener('click', renderEventTemplates);
+        document.getElementById('explore-unknown')?.addEventListener('click', exploreUnknown);
+        panel.querySelectorAll('.traveler-observation-bookmark').forEach((button) => button.addEventListener('click', () => assignObservationChapter(button.dataset.observationId)));
     }
+    async function exploreUnknown() { try { const result = global.TravelerKeepsake.generateActiveEvent(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {}); if (!result.generated) return global.showNotification?.('四周暂时没有新的动静，稍后再来探索吧。', 'info'); keepsakeData = await global.TravelerKeepsake.save(result.data); renderObservationsMain(); global.showNotification?.('新的见闻已落入纪事匣', 'success'); } catch (error) { showKeepsakeError(error); } }
+    async function assignObservationChapter(id) { const item = (keepsakeData.observations || []).find((entry) => entry.id === id); if (!item) return; const chapters = keepsakeData.chapters || []; const overlay = document.createElement('div'); overlay.className = 'traveler-observation-chapter-picker'; overlay.innerHTML = `<div class="traveler-observation-chapter-picker-card"><h3>收藏至旅途篇章</h3><div class="traveler-observation-chapter-options">${chapters.map((chapter) => `<button type="button" data-chapter-id="${escapeHtml(chapter.id)}">${escapeHtml(chapter.title)}</button>`).join('')}</div><div class="traveler-observation-chapter-picker-actions">${item.chapterId ? '<button type="button" data-clear-chapter="true">取消收藏</button>' : ''}<button type="button" data-cancel-picker="true">取消</button><button type="button" data-new-chapter="true">新建篇章</button></div></div>`; document.body.appendChild(overlay); const close = () => overlay.remove(); overlay.querySelector('[data-cancel-picker]')?.addEventListener('click', close); overlay.querySelector('[data-clear-chapter]')?.addEventListener('click', async () => { const old = item.chapterId; item.chapterId = null; try { await global.TravelerKeepsake.save(keepsakeData); close(); renderObservationsMain(); } catch (error) { item.chapterId = old; showKeepsakeError(error); } }); overlay.querySelectorAll('[data-chapter-id]').forEach((button) => button.addEventListener('click', async () => { const old = item.chapterId; item.chapterId = button.dataset.chapterId; try { await global.TravelerKeepsake.save(keepsakeData); close(); renderObservationsMain(); } catch (error) { item.chapterId = old; showKeepsakeError(error); } })); overlay.querySelector('[data-new-chapter]')?.addEventListener('click', () => { close(); openChapterForm(null, id); }); }
 
     function openEventForm(eventId) {
         const form = document.getElementById('traveler-keepsake-event-form');
@@ -262,11 +282,12 @@
         document.getElementById('back-to-traveler-chapters').addEventListener('click', renderChapterList);
     }
 
-    function openChapterForm(chapterId) {
+    function openChapterForm(chapterId, observationId = null) {
         const form = document.getElementById('traveler-keepsake-chapter-form');
         const chapter = chapterId ? (keepsakeData?.chapters || []).find((item) => item.id === chapterId) : null;
         if (!form) return;
         editingChapterId = chapterId || null;
+        pendingObservationId = observationId;
         draftChapterCover = chapter?.cover || '';
         document.getElementById('traveler-keepsake-form-title').textContent = chapter ? '编辑旅途篇章' : '开启新旅程';
         form.elements.title.value = chapter?.title || '';
@@ -280,7 +301,7 @@
         if (typeof global.showModal === 'function') global.showModal(modal); else modal.style.display = 'flex';
     }
 
-    function closeChapterForm() { const modal = document.getElementById('traveler-keepsake-form-modal'); modal.setAttribute('aria-hidden', 'true'); if (typeof global.hideModal === 'function') global.hideModal(modal); else modal.style.display = 'none'; editingChapterId = null; }
+    function closeChapterForm() { const modal = document.getElementById('traveler-keepsake-form-modal'); modal.setAttribute('aria-hidden', 'true'); if (typeof global.hideModal === 'function') global.hideModal(modal); else modal.style.display = 'none'; editingChapterId = null; pendingObservationId = null; }
 
     function renderCoverPreview() {
         const preview = document.getElementById('traveler-keepsake-cover-preview');
@@ -327,9 +348,11 @@
             Object.assign(chapter, { title, summary: form.elements.summary.value.trim(), startDate: form.elements.startDate.value || todayString(), endDate: form.elements.status.value === 'completed' ? (form.elements.endDate.value || todayString()) : null, cover: draftChapterCover, status: form.elements.status.value, updatedAt: now });
             Object.keys(preserved).forEach((key) => { if (!['title', 'summary', 'startDate', 'endDate', 'cover', 'status', 'updatedAt'].includes(key)) chapter[key] = preserved[key]; });
         } else {
-            keepsakeData.chapters.push({ id: global.TravelerKeepsake.generateId('chapter'), title, summary: form.elements.summary.value.trim(), cover: draftChapterCover, startDate: form.elements.startDate.value || todayString(), endDate: form.elements.status.value === 'completed' ? (form.elements.endDate.value || todayString()) : null, status: form.elements.status.value, createdAt: now, updatedAt: now });
+            const newChapter = { id: global.TravelerKeepsake.generateId('chapter'), title, summary: form.elements.summary.value.trim(), cover: draftChapterCover, startDate: form.elements.startDate.value || todayString(), endDate: form.elements.status.value === 'completed' ? (form.elements.endDate.value || todayString()) : null, status: form.elements.status.value, createdAt: now, updatedAt: now };
+            keepsakeData.chapters.push(newChapter);
+            if (pendingObservationId) { const observation = keepsakeData.observations.find((entry) => entry.id === pendingObservationId); if (observation) observation.chapterId = newChapter.id; }
         }
-        try { await global.TravelerKeepsake.save(keepsakeData); closeChapterForm(); renderChapterList(); global.showNotification?.(wasEditing ? '篇章已更新' : '新旅程已开启', 'success'); } catch (error) { showKeepsakeError(error); }
+        try { await global.TravelerKeepsake.save(keepsakeData); pendingObservationId = null; closeChapterForm(); renderChapterList(); global.showNotification?.(wasEditing ? '篇章已更新' : '新旅程已开启', 'success'); } catch (error) { showKeepsakeError(error); }
     }
 
     async function deleteChapter(chapterId) {
