@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button id="session-manager-btn" class="action-btn" title="旅伴与信笺" aria-label="旅伴与信笺"><i class="fas fa-comments" aria-hidden="true"></i></button>
+                <button id="session-manager-btn" class="action-btn" title="旅途纪事匣" aria-label="旅途纪事匣"><i class="fas fa-book-open" aria-hidden="true"></i></button>
                 <button id="group-chat-btn" class="action-btn" title="冒险小队" aria-label="冒险小队"><i class="fas fa-users" aria-hidden="true"></i></button>
                 <button id="daily-greeting-btn" class="action-btn" title="营地札记" aria-label="营地札记" onclick="reopenDailyGreeting()"><i class="fas fa-newspaper" aria-hidden="true"></i></button>
                 <button id="theme-toggle" class="action-btn" title="切换主题" aria-label="切换主题"><i class="fas fa-moon" aria-hidden="true"></i></button>
@@ -1386,6 +1386,61 @@
         </div>
     </div>
 
+    <div class="modal traveler-keepsake-modal" id="traveler-keepsake-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-content">
+            <div class="traveler-keepsake-header">
+                <div class="traveler-keepsake-heading">
+                    <i class="fas fa-book-open" aria-hidden="true"></i>
+                    <div>
+                        <div class="traveler-keepsake-kicker">TRAVELER'S KEEPSAKE</div>
+                        <div class="traveler-keepsake-title">旅途纪事匣</div>
+                    </div>
+                </div>
+                <button class="traveler-keepsake-close" id="close-traveler-keepsake" type="button" aria-label="关闭旅途纪事匣">×</button>
+            </div>
+            <p class="traveler-keepsake-intro">把沿途的见闻、物件与话语收进一册私人旅行手记。</p>
+            <div class="traveler-keepsake-layout">
+                <nav class="traveler-keepsake-nav" id="traveler-keepsake-nav" aria-label="纪事匣区域">
+                    <button type="button" class="traveler-keepsake-tab active" data-keepsake-section="chapters"><i class="fas fa-map"></i><span>旅途篇章</span></button>
+                    <button type="button" class="traveler-keepsake-tab" data-keepsake-section="observations"><i class="fas fa-eye"></i><span>旅途见闻</span></button>
+                    <button type="button" class="traveler-keepsake-tab" data-keepsake-section="keepsakes"><i class="fas fa-gem"></i><span>珍藏之物</span></button>
+                    <button type="button" class="traveler-keepsake-tab" data-keepsake-section="gifts"><i class="fas fa-gift"></i><span>礼物簿</span></button>
+                    <button type="button" class="traveler-keepsake-tab" data-keepsake-section="quotes"><i class="fas fa-quote-left"></i><span>言语摘录</span></button>
+                    <button type="button" class="traveler-keepsake-tab" data-keepsake-section="chronicles"><i class="fas fa-scroll"></i><span>旅途编年史</span></button>
+                </nav>
+                <section class="traveler-keepsake-panel" id="traveler-keepsake-panel" aria-live="polite"></section>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-form-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-form-content">
+            <div class="modal-title"><i class="fas fa-map"></i><span id="traveler-keepsake-form-title">开启新旅程</span></div>
+            <form id="traveler-keepsake-chapter-form" novalidate>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-chapter-title">篇章名称 <span>*</span></label>
+                <input class="modal-input" id="traveler-keepsake-chapter-title" name="title" maxlength="80" required placeholder="例如：雾林远行">
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-chapter-summary">旅途简介</label>
+                <textarea class="modal-textarea" id="traveler-keepsake-chapter-summary" name="summary" maxlength="500" placeholder="写下这段旅途的来处与方向"></textarea>
+                <div class="traveler-keepsake-form-grid">
+                    <div><label class="traveler-keepsake-form-label" for="traveler-keepsake-chapter-start">开始日期</label><input class="modal-input" type="date" id="traveler-keepsake-chapter-start" name="startDate" required></div>
+                    <div><label class="traveler-keepsake-form-label" for="traveler-keepsake-chapter-status">状态</label><select class="modal-input" id="traveler-keepsake-chapter-status" name="status"><option value="active">进行中</option><option value="completed">已结束</option></select></div>
+                </div>
+                <label class="traveler-keepsake-form-label" for="traveler-keepsake-chapter-end">结束日期 <span class="traveler-keepsake-optional">（结束篇章时填写）</span></label>
+                <input class="modal-input" type="date" id="traveler-keepsake-chapter-end" name="endDate">
+                <div class="traveler-keepsake-form-label">封面（可选）</div>
+                <div class="traveler-keepsake-cover-editor">
+                    <div class="traveler-keepsake-cover-preview" id="traveler-keepsake-cover-preview"><i class="fas fa-map-marked-alt"></i><span>默认地图装饰</span></div>
+                    <div class="traveler-keepsake-cover-controls">
+                        <input type="file" id="traveler-keepsake-chapter-cover-file" accept="image/jpeg,image/png,image/webp" hidden>
+                        <button type="button" class="modal-btn modal-btn-secondary" id="choose-traveler-keepsake-cover"><i class="fas fa-image"></i> 选择封面图片</button>
+                        <button type="button" class="traveler-keepsake-cover-remove" id="remove-traveler-keepsake-cover">移除封面</button>
+                    </div>
+                </div>
+                <div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="cancel-traveler-keepsake-form">取消</button><button type="submit" class="modal-btn modal-btn-primary">保存篇章</button></div>
+            </form>
+        </div>
+    </div>
+
     <div class="modal" id="fortune-lenormand-modal">
         <div class="modal-content fl-modal-content">
             <div class="fl-tab-bar">
@@ -2122,6 +2177,8 @@
     <script src="js/backup-engine.js"></script>
     <script src="js/state.js"></script>
     <script src="js/core.js"></script>
+    <script src="js/features/traveler-keepsake.js"></script>
+    <script src="js/features/traveler-keepsake-ui.js"></script>
 
     <!-- == 功能模块 == -->
     <script src="js/features/mood.js"></script>
