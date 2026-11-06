@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Traveler's Keepsake data layer.
  *
  * This module intentionally has no UI or chat integration. It stores one
@@ -47,11 +47,59 @@
         { id:'composition_system_discovery', title:'偶然发现', content:'{人物}在{地点}发现了{发现物}。' },
         { id:'composition_system_accident', title:'意外插曲', content:'当{人物}经过{地点}时，遭遇了{遭遇}。' },
         { id:'composition_system_activity', title:'共同活动', content:'{人物A}和{人物B}在{地点}{活动}。' },
-        { id:'composition_system_mishap', title:'旅途中的意外', content:'{人物}原本打算在{地点}{做了什么}，却意外遇到了{遭遇}。' }
+        { id:'composition_system_mishap', title:'旅途中的意外', content:'{人物}原本打算在{地点}{做了什么}，却意外遇到了{遭遇}。'},
+        { id:'composition_system_weather', title:'天气转变', content:'{人物}在{地点}{做了什么}时，天色忽然变得与刚才不同。'},
+        { id:'composition_system_animal_sign', title:'动物的指引', content:'{人物}在{地点}观察到{遭遇}留下的奇特痕迹。'},
+        { id:'composition_system_found_letter', title:'旧信的来处', content:'{人物}在{地点}发现了来自{来处}的{发现物}。'},
+        { id:'composition_system_market_trade', title:'集市小交易', content:'来自{来处}的{人物}在{地点}展示了一件有趣的{发现物}。'},
+        { id:'composition_system_camp_recipe', title:'营地新菜谱', content:'{人物A}和{人物B}在{地点}{活动}，并为晚餐想出了一种新做法。'},
+        { id:'composition_system_road_block', title:'道路受阻', content:'当{人物}经过{地点}时，{遭遇}挡住了原本的道路。'},
+        { id:'composition_system_symbol', title:'陌生符号', content:'{人物}在{地点}发现{发现物}，上面刻着一枚无法辨认的符号。'},
+        { id:'composition_system_rest', title:'短暂歇息', content:'{人物A}和{人物B}在{地点}{活动}，让脚步重新恢复轻快。'},
+        { id:'composition_system_distant_voice', title:'远处的声音', content:'{人物}在{地点}{做了什么}时，听见了来自远方的动静。'},
+        { id:'composition_system_herbal_hint', title:'草药的线索', content:'{人物}在{地点}辨认出{发现物}，想起了关于它的旧传闻。'},
+        { id:'composition_system_guest_question', title:'旅人的问题', content:'来自{来处}的{人物}在{地点}向旅人询问一条道路。'},
+        { id:'composition_system_night_watch', title:'夜色观察', content:'{人物}在{地点}{做了什么}时，发现夜空中有一颗星星异常明亮。'},
+        { id:'composition_system_shared_task', title:'并肩劳作', content:'{人物A}与{人物B}在{地点}{活动}，很快让营地变得井然有序。'},
+        { id:'composition_system_mysterious_box', title:'没有锁孔的盒子', content:'{人物}在{地点}找到一个来自{来处}的盒子，却找不到打开它的方法。'},
+        { id:'composition_system_rain_shelter', title:'雨中的避所', content:'{人物}在{地点}躲避{遭遇}，意外发现墙角有新鲜的火种。'},
+        { id:'composition_system_tales', title:'交换传闻', content:'{人物A}和{人物B}在{地点}{活动}时，交换了各自听过的奇闻。'},
+        { id:'composition_system_old_route', title:'旧路重现', content:'{人物}在{地点}阅读{发现物}，从中辨认出一条被遗忘的路线。'},
+        { id:'composition_system_small_mistake', title:'小小失误', content:'{人物}在{地点}{做了什么}时出了一个小差错，却因此发现了新的线索。'},
+        { id:'composition_system_friendly_challenge', title:'旅途比试', content:'{人物A}和{人物B}在{地点}进行一场轻松的{活动}。'},
+        { id:'composition_system_returning_trader', title:'熟悉的商队', content:'来自{来处}的{人物}再次出现在{地点}，带来了上次提到的{发现物}。'},
+        { id:'composition_system_hidden_shelter', title:'隐蔽的休息处', content:'{人物}在{地点}{做了什么}时，发现了一处适合避风的角落。'},
+        { id:'composition_system_odd_tracks', title:'奇怪的足迹', content:'{人物}在{地点}追踪{遭遇}留下的足迹，却在途中发现它们突然消失。'},
+        { id:'composition_system_memory', title:'旧日回忆', content:'{人物A}和{人物B}在{地点}{活动}时，谈起一件已经被时间掩埋的小事。'},
+        { id:'composition_system_camp_morning', title:'营地晨光', content:'{人物}在{地点}醒来后，发现{遭遇}让清晨变得格外热闹。'},
+        { id:'composition_system_trader_news', title:'商队带来的消息', content:'来自{来处}的{人物}在{地点}分享了一则关于远方的消息。'},
+        { id:'composition_system_ruin_mark', title:'遗迹中的标记', content:'{人物}在{地点}{做了什么}时，看见墙上留下了指向{发现物}的古老标记。'},
+        { id:'composition_system_river_crossing', title:'河谷渡口', content:'{人物A}和{人物B}在{地点}遇见{遭遇}，只好一起寻找安全的渡路。'},
+        { id:'composition_system_starlit_rest', title:'星光下的休息', content:'{人物A}和{人物B}在{地点}{活动}，谈起了来自{来处}的旧传说。'},
+        { id:'composition_system_strange_weather', title:'奇异天气', content:'{人物}在{地点}{做了什么}时，天边忽然出现了不合季节的光。'},
+        { id:'composition_system_lost_item', title:'遗失的小物', content:'{人物}在{地点}整理行囊时，发现{发现物}不知何时混进了其中。'},
+        { id:'composition_system_old_song', title:'旧歌的线索', content:'来自{来处}的{人物}在{地点}唱起一首歌，歌词里藏着关于{发现物}的线索。'},
+        { id:'composition_system_creature_watch', title:'静静观察', content:'{人物}在{地点}观察{遭遇}许久，终于明白它为何总在黄昏时出现。'},
+        { id:'composition_system_camp_game', title:'营地里的小游戏', content:'{人物A}和{人物B}在{地点}{活动}，输家负责准备下一顿热饮。'},
+        { id:'composition_system_hidden_message', title:'藏在路边的话', content:'{人物}在{地点}发现{发现物}，其中夹着一张来自{来处}的短笺。'},
+        { id:'composition_system_helpful_local', title:'当地人的提醒', content:'{人物}在{地点}遇到{人物A}，对方提醒他们留意附近的{遭遇}。'},
+        { id:'composition_system_herb_market', title:'草药摊前', content:'来自{来处}的{人物}在{地点}展示了几种草药，并请旅人辨认其中的{发现物}。'},
+        { id:'composition_system_foggy_path', title:'雾中的道路', content:'{人物}在{地点}{做了什么}时，浓雾遮住了道路，只留下{遭遇}的声音。'},
+        { id:'composition_system_shared_discovery', title:'共同发现', content:'{人物A}和{人物B}在{地点}共同发现了{发现物}，并为它猜测了几种来历。'},
+        { id:'composition_system_travel_note', title:'写下旅途札记', content:'{人物}在{地点}{做了什么}，把关于{遭遇}的细节记进了旅途札记。'},
+        { id:'composition_system_forgotten_camp', title:'被遗忘的营地', content:'{人物}在{地点}发现一处旧营地，篝火旁还留着来自{来处}的{发现物}。'},
+        { id:'composition_system_night_sound', title:'夜半声响', content:'{人物A}和{人物B}在{地点}休息时，听见{遭遇}在黑暗中发出细微的声响。'},
+        { id:'composition_system_waystone', title:'路标的方向', content:'{人物}在{地点}读懂一块旧路标，决定沿着它指向的方向寻找{发现物}。'},
+        { id:'composition_system_friendly_help', title:'顺手相助', content:'{人物}在{地点}遇见{人物A}，于是停下{做了什么}，帮对方解决了一个小麻烦。'},
+        { id:'composition_system_camp_tale', title:'篝火故事', content:'{人物A}和{人物B}在{地点}{活动}，一个来自{来处}的传说被讲了两遍。'},
+        { id:'composition_system_moonlit_object', title:'月光下的物件', content:'{人物}在{地点}借着月光发现{发现物}，它的影子指向了一条小路。'},
+        { id:'composition_system_unexpected_guest', title:'意外来访', content:'{人物}在{地点}{做了什么}时，{遭遇}忽然来到营地边缘。'},
     ];
     const SYSTEM_TEMPLATES = [
         { id: 'event_system_herb', title: '{角色名}的林间发现', content: '{角色名}在林间发现了一株罕见的草药，决定仔细观察它的生长环境。', participants: 'character', categoryId: 'category_exploration', weight: 'normal', tags: ['森林', '采集'], cooldownDays: 3 },
         { id: 'event_system_campfire', title: '篝火旁的一段闲谈', content: '夜色降临，篝火映亮了营地，也为两人留出一段安静交谈的时光。', participants: 'both', categoryId: 'category_camp', weight: 'common', tags: ['营地', '交谈'], cooldownDays: 1 },
+        { id: 'event_system_potato_new_badge', title: '土豆骑士的微型盾牌', content: '在村庄广场的公告板旁，旅人发现一面只有掌心大小的木盾。盾面刻着土豆骑士的徽记，旁边还留着一行歪歪扭扭的誓言。', participants: 'daily', categoryId: 'category_daily', weight: 'normal', tags: ['土豆', '骑士', '村庄'], cooldownDays: 10 },
+        { id: 'event_system_cangzhu_new_archive', title: '仓助先生的道路档案', content: '驿站掌柜展示了一册用不同颜色线绳装订的道路档案，每一页都记着仓助先生曾经走过的一段路，以及那段路最可靠的休息地点。', participants: 'daily', categoryId: 'category_exploration', weight: 'rare', tags: ['仓助', '驿站', '道路'], cooldownDays: 14 },
         { id: 'event_system_merchant_spice', title: '旅行商队的香料盒', content: '一支旅行商队在路边短暂停留，商人打开一只刻着月桂纹的香料盒，邀请路人辨认其中的气味。', participants: 'daily', categoryId: 'category_daily', weight: 'common', tags: ['商队', '风味'], cooldownDays: 2 },
         { id: 'event_system_tavern_song', title: '酒馆里的无名小调', content: '村口酒馆里，一位吟游诗人唱起关于远方的轻快小调，最后一句歌词似乎是临时为在座旅人写的。', participants: 'daily', categoryId: 'category_daily', weight: 'common', tags: ['酒馆', '吟游诗人'], cooldownDays: 2 },
         { id: 'event_system_village_custom', title: '村庄的月灯习俗', content: '路过的村民邀请旅人参加月灯仪式：每个人都要在灯罩上写下一句希望，再把灯挂到老橡树下。', participants: 'daily', categoryId: 'category_daily', weight: 'normal', tags: ['村庄', '习俗'], cooldownDays: 7 },
@@ -75,8 +123,36 @@
         { id: 'event_system_old_adventure', title: '交换一段冒险往事', content: '{角色名}提起一段早已结束的冒险，{我}也分享了自己记得最清楚的一个片段；两段故事在某个细节上意外地重合了。', participants: 'both', categoryId: 'category_conversation', weight: 'normal', tags: ['冒险', '回忆'], cooldownDays: 5 },
         { id: 'event_system_animal_lore', title: '关于动物的冷知识', content: '{角色名}讲起一种只在月光下迁徙的森林动物，{我}认真听完后，决定下次留意林间是否有它们的踪迹。', participants: 'both', categoryId: 'category_conversation', weight: 'common', tags: ['动物', '知识'], cooldownDays: 3 },
         { id: 'event_system_magic_theory', title: '一场关于魔法的争论', content: '路过一座旧神殿时，{角色名}和{我}对门楣上的符号含义产生了不同猜测，直到一阵风让其中一块石片翻了面。', participants: 'both', categoryId: 'category_conversation', weight: 'normal', tags: ['魔法', '神殿'], cooldownDays: 6 },
-        { id: 'event_system_druid_advice', title: '德鲁伊的天气建议', content: '一位路过的德鲁伊提醒旅人，山谷里的云影正在改变方向，并顺手分享了一个辨认晴雨的简单方法。', participants: 'daily', categoryId: 'category_conversation', weight: 'common', tags: ['德鲁伊', '天气'], cooldownDays: 4 }
+        { id: 'event_system_druid_advice', title: '德鲁伊的天气建议', content: '一位路过的德鲁伊提醒旅人，山谷里的云影正在改变方向，并顺手分享了一个辨认晴雨的简单方法。', participants: 'daily', categoryId: 'category_conversation', weight: 'common', tags: ['德鲁伊', '天气'], cooldownDays: 4 },
+        { id: 'event_system_wayfarer_map', title: '路边的手绘地图', content: '在边境驿站，一张手绘地图被压在旧木桌下。它标出了一条已经荒废、却仍可能通往山谷的旧路。', participants: 'daily', categoryId: 'category_daily', weight: 'normal', tags: ['驿站', '地图'], cooldownDays: 5 },
+        { id: 'event_system_warm_bread', title: '刚出炉的面包', content: '清晨经过小村时，烘焙师请旅人帮忙试吃一批新面包。麦香混着蜂蜜，足以让赶路的脚步慢下来。', participants: 'daily', categoryId: 'category_daily', weight: 'common', tags: ['村庄', '食物'], cooldownDays: 3 },
+        { id: 'event_system_ferry_story', title: '渡船人的故事', content: '河谷渡口的船夫一边撑船，一边讲起一座在雾中消失的旧桥。靠岸时，他仍没说清那故事是真是假。', participants: 'daily', categoryId: 'category_daily', weight: 'normal', tags: ['渡口', '传闻'], cooldownDays: 6 },
+        { id: 'event_system_moss_rune', title: '苔藓下的符文', content: '清理石阶上的苔藓时，露出一行矮人符文。它记录的不是宝藏，而是一句提醒后来者小心山洪。', participants: 'character', categoryId: 'category_exploration', weight: 'normal', tags: ['符文', '山洪'], cooldownDays: 7 },
+        { id: 'event_system_archway', title: '古老拱门', content: '古道旁的石拱门只剩半边，门下却没有道路。风穿过拱顶时，带来一阵遥远钟声。', participants: 'both', categoryId: 'category_exploration', weight: 'rare', tags: ['遗迹', '钟声'], cooldownDays: 12 },
+        { id: 'event_system_mine_lantern', title: '矿井里的微光', content: '废弃矿井深处仍有一盏微弱的提灯，灯油早已干涸，火焰却在石壁间安静燃烧。', participants: 'character', categoryId: 'category_exploration', weight: 'rare', tags: ['矿井', '魔法'], cooldownDays: 14 },
+        { id: 'event_system_library_page', title: '风中的书页', content: '遗迹入口飘出一页古书，纸面没有文字，只有一幅描绘附近山脉的精细地图。', participants: 'user', categoryId: 'category_exploration', weight: 'normal', tags: ['古书', '地图'], cooldownDays: 8 },
+        { id: 'event_system_bird_nest', title: '树冠里的鸟巢', content: '树冠间传来幼鸟的叫声，附近的鸟群不断把柔软的羽毛带回巢中，像是在准备迎接一场寒潮。', participants: 'daily', categoryId: 'category_nature', weight: 'common', tags: ['鸟类', '森林'], cooldownDays: 3 },
+        { id: 'event_system_moon_dew', title: '月露草', content: '月光下，一片小草叶凝出银亮露珠。草药师说它只在空气足够安静的夜里出现。', participants: 'character', categoryId: 'category_nature', weight: 'rare', tags: ['草药', '月光'], cooldownDays: 10 },
+        { id: 'event_system_beaver_dam', title: '河狸的水坝', content: '河狸重新堆起一座小水坝，改变了溪水的方向，也让原本干涸的低地长出了新一片芦苇。', participants: 'daily', categoryId: 'category_nature', weight: 'normal', tags: ['河流', '生态'], cooldownDays: 6 },
+        { id: 'event_system_stone_garden', title: '石头里的种子', content: '一块裂开的石头中长出细小花茎，根系沿着岩缝寻找水分，显得顽强得近乎神奇。', participants: 'user', categoryId: 'category_nature', weight: 'normal', tags: ['植物', '生命'], cooldownDays: 7 },
+        { id: 'event_system_herb_tea', title: '草药茶的火候', content: '营地里的草药茶煮得太久，味道苦得皱眉，却意外驱散了整夜的疲惫。', participants: 'both', categoryId: 'category_camp', weight: 'common', tags: ['草药', '茶'], cooldownDays: 2 },
+        { id: 'event_system_boot_lace', title: '靴带和补丁', content: '整理装备时发现靴带快要断了。几针粗糙的补丁虽然不漂亮，却足以撑过接下来的山路。', participants: 'user', categoryId: 'category_camp', weight: 'common', tags: ['装备', '修补'], cooldownDays: 2 },
+        { id: 'event_system_story_circle', title: '篝火旁的故事接龙', content: '篝火旁的每个人只讲一句故事，片段最终拼成了一个关于勇敢厨师和会唱歌的龙的荒诞传说。', participants: 'both', categoryId: 'category_camp', weight: 'common', tags: ['篝火', '故事'], cooldownDays: 4 },
+        { id: 'event_system_bedroll_frost', title: '霜上的睡袋', content: '黎明时发现睡袋上结了一层薄霜，附近的火堆却没有熄灭，像是夜里有人悄悄替旅人添过柴。', participants: 'character', categoryId: 'category_camp', weight: 'normal', tags: ['霜冻', '守夜'], cooldownDays: 8 },
+        { id: 'event_system_cart_wheel', title: '卡住的车轮', content: '一辆商队马车的车轮陷进泥里，几个人合力垫上木板后，车队用一袋苹果作为谢礼。', participants: 'daily', categoryId: 'category_accident', weight: 'common', tags: ['商队', '帮忙'], cooldownDays: 3 },
+        { id: 'event_system_floating_lantern', title: '漂来的灯笼', content: '雨后的溪水带来一盏没有灯芯的纸灯笼，灯面画着一颗陌生的星。', participants: 'user', categoryId: 'category_accident', weight: 'rare', tags: ['河流', '灯笼'], cooldownDays: 12 },
+        { id: 'event_system_mistaken_signal', title: '误认的信号', content: '山坡上的白布被误认成求救信号，赶到后才发现那是农夫晾晒的床单。', participants: 'daily', categoryId: 'category_accident', weight: 'common', tags: ['误会', '山路'], cooldownDays: 3 },
+        { id: 'event_system_silent_bell', title: '不会响的钟', content: '废弃神殿门口挂着一口钟，敲击时没有声音，却让附近的鸟群同时抬头望向天空。', participants: 'character', categoryId: 'category_accident', weight: 'rare', tags: ['神殿', '魔法'], cooldownDays: 14 },
+        { id: 'event_system_guardian_question', title: '守卫的谜语', content: '村庄守卫没有索要钱币，而是问了一个关于故乡的谜语。答对后，他指给旅人一条更安全的路。', participants: 'both', categoryId: 'category_conversation', weight: 'normal', tags: ['守卫', '谜语'], cooldownDays: 6 },
+        { id: 'event_system_scholar_rubbing', title: '学者的拓印', content: '研究古文字的学者请求帮忙拓印一段碑文，并承诺日后寄来它的完整译文。', participants: 'daily', categoryId: 'category_conversation', weight: 'normal', tags: ['学者', '古文字'], cooldownDays: 7 },
+        { id: 'event_system_ranger_warning', title: '游侠的提醒', content: '年轻游侠指出林中最近有人频繁经过，并建议旅人不要在同一片空地停留太久。', participants: 'character', categoryId: 'category_conversation', weight: 'common', tags: ['游侠', '道路'], cooldownDays: 4 },
+        { id: 'event_system_minstrel_debate', title: '吟游诗人的争论', content: '吟游诗人坚称月亮会听见旅人的愿望，同行者则提出了三个反例，争论一直持续到晚饭上桌。', participants: 'both', categoryId: 'category_conversation', weight: 'common', tags: ['吟游诗人', '闲谈'], cooldownDays: 4 }
+        ,{ id: 'event_system_shrine_water', title: '神龛边的清水', content: '荒野小神龛旁有一碗清水，碗底压着一枚写着祝福的叶片。水源来自哪里，附近的旅人也说不清。', participants: 'daily', categoryId: 'category_exploration', weight: 'normal', tags: ['神龛', '祝福'], cooldownDays: 7 }
     ];
+    const REMOVED_SYSTEM_EVENT_IDS = new Set([
+        'event_system_potato_guard',
+        'event_system_cangzhu_waykeeper'
+    ]);
     const WEIGHT_VALUES = { common: 6, normal: 3, rare: 1 };
 
     function createDefaultTravelerKeepsake() {
@@ -231,6 +307,7 @@
         });
         result.eventCategories = categories;
         result.eventTemplates = Array.isArray(result.eventTemplates) ? result.eventTemplates : [];
+        result.eventTemplates = result.eventTemplates.filter((item) => !(item && item.source === 'system' && REMOVED_SYSTEM_EVENT_IDS.has(item.id)));
         const keywordNow = Date.now();
         Object.entries(SYSTEM_KEYWORDS).forEach(([category, values]) => values.forEach((value) => { if (!result.keywordLibrary.some((item) => item && item.source === 'system' && item.category === category && item.value === value)) result.keywordLibrary.push({ id: `keyword_system_${category}_${value}`, category, value, source: 'system', enabled: true, createdAt: keywordNow, updatedAt: keywordNow }); }));
         SYSTEM_TEMPLATES.forEach((template) => {
@@ -278,28 +355,60 @@
         return String(text || '').replaceAll('{角色名}', partner).replaceAll('{我}', mine).replaceAll('{自己的名字}', mine);
     }
 
+    function buildEventCandidatePool(data) {
+        if (!isPlainObject(data) || !Array.isArray(data.eventTemplates)) throw new Error('[travelerKeepsake] 无法构建事件候选池：事件库数据无效');
+        const candidates = data.eventTemplates.filter((item) => item && item.enabled !== false && typeof item.id === 'string' && typeof item.title === 'string' && typeof item.content === 'string' && ['daily', 'character', 'user', 'both'].includes(item.participants) && Object.prototype.hasOwnProperty.call(WEIGHT_VALUES, item.weight)).map((item) => ({ id: generateTravelerKeepsakeId('candidate'), source: 'library', templateId: item.id, title: item.title, content: item.content, participants: item.participants, categoryId: item.categoryId || null, weight: item.weight, cooldownDays: Math.max(0, Number(item.cooldownDays) || 0), tags: Array.isArray(item.tags) ? item.tags.slice() : [] }));
+
+        const keywordByCategory = {};
+        (data.keywordLibrary || []).filter((item) => item && item.enabled !== false && typeof item.value === 'string' && item.value.trim()).forEach((item) => {
+            (keywordByCategory[item.category] ||= []).push(item.value.trim());
+        });
+        const placeholderCategory = { '人物': 'person', '人物A': 'person', '人物B': 'person', '地点': 'location', '来处': 'origin', '做了什么': 'action', '发现物': 'discovery', '遭遇': 'encounter', '活动': 'activity' };
+        const compositionCandidates = (data.compositionTemplates || []).filter((template) => template && template.enabled !== false && typeof template.id === 'string' && typeof template.title === 'string' && typeof template.content === 'string').map((template) => {
+            const validation = validateCompositionTemplate(template.content);
+            if (!validation.valid) return null;
+            const values = {};
+            for (const placeholder of validation.placeholders) {
+                const category = placeholderCategory[placeholder];
+                const pool = keywordByCategory[category] || [];
+                if (!pool.length) return null;
+                if (placeholder === '人物A' || placeholder === '人物B') {
+                    const other = placeholder === '人物A' ? values['人物B'] : values['人物A'];
+                    const available = pool.filter((value) => value !== other);
+                    if (!available.length) return null;
+                    values[placeholder] = available[Math.floor(Math.random() * available.length)];
+                } else if (!Object.prototype.hasOwnProperty.call(values, placeholder)) {
+                    values[placeholder] = pool[Math.floor(Math.random() * pool.length)];
+                }
+            }
+            const replace = (text) => String(text).replace(/\{([^{}]+)\}/g, (match, key) => Object.prototype.hasOwnProperty.call(values, key) ? values[key] : match);
+            const participants = ['daily', 'character', 'user', 'both'].includes(template.participants) ? template.participants : 'daily';
+            const weight = Object.prototype.hasOwnProperty.call(WEIGHT_VALUES, template.weight) ? template.weight : 'normal';
+            return { id: generateTravelerKeepsakeId('candidate'), source: 'keyword', templateId: template.id, title: replace(template.title), content: replace(template.content), participants, categoryId: template.categoryId || null, weight, cooldownDays: Math.max(0, Number(template.cooldownDays) || 0), tags: Array.isArray(template.tags) ? template.tags.slice() : [] };
+        }).filter(Boolean);
+        return candidates.concat(compositionCandidates);
+    }
+
+    function drawEventCandidates(pool, observations, day, count) {
+        if (!Array.isArray(pool) || !Array.isArray(observations)) throw new Error('[travelerKeepsake] 事件抽取参数无效');
+        let eligible = pool.filter((candidate) => !candidate.cooldownDays || !observations.some((observation) => { if (observation.templateId !== candidate.templateId || !observation.date) return false; const days = Math.round((new Date(`${day}T00:00:00`) - new Date(`${observation.date}T00:00:00`)) / 86400000); return days >= 0 && days <= candidate.cooldownDays; }));
+        const selected = [];
+        while (selected.length < count && eligible.length) { const picked = weightedPick(eligible); if (!picked) break; selected.push(picked); eligible = eligible.filter((item) => item.id !== picked.id); }
+        return selected;
+    }
+
+    function candidateToObservation(candidate, day, now, settings) {
+        return { id: generateTravelerKeepsakeId('observation'), templateId: candidate.templateId, date: day, occurredAt: now, title: replaceEventNames(candidate.title, settings), content: replaceEventNames(candidate.content, settings), participants: candidate.participants, categoryId: candidate.categoryId, tags: candidate.tags.slice(), createdAt: now };
+    }
+
     function generateDailyEvents(data, date, settings) {
         const normalized = migrateTravelerKeepsake(data);
         const day = localDateKey(date);
         if (normalized.eventGeneration.lastCheckedDate === day) return { data: normalized, generated: false, count: 0 };
         const now = Date.now();
-        const candidates = normalized.eventTemplates.filter((item) => item && item.enabled !== false && ['daily', 'character', 'user', 'both'].includes(item.participants) && Object.prototype.hasOwnProperty.call(WEIGHT_VALUES, item.weight));
-        const eligible = candidates.filter((template) => {
-            const cooldown = Math.max(0, Number(template.cooldownDays) || 0);
-            if (!cooldown) return true;
-            return !normalized.observations.some((observation) => {
-                if (observation.templateId !== template.id || !observation.date) return false;
-                const then = new Date(`${observation.date}T00:00:00`);
-                const nowDay = new Date(`${day}T00:00:00`);
-                const days = Math.round((nowDay - then) / 86400000);
-                return days >= 0 && days <= cooldown;
-            });
-        });
-        const selected = [];
-        const target = Math.min(chooseDailyCount(), eligible.length);
-        let pool = eligible.slice();
-        while (selected.length < target && pool.length) { const picked = weightedPick(pool); if (!picked) break; selected.push(picked); pool = pool.filter((item) => item.id !== picked.id); }
-        selected.forEach((template) => normalized.observations.push({ id: generateTravelerKeepsakeId('observation'), templateId: template.id, date: day, occurredAt: now, title: replaceEventNames(template.title, settings), content: replaceEventNames(template.content, settings), participants: template.participants, categoryId: template.categoryId || null, tags: Array.isArray(template.tags) ? template.tags.slice() : [], createdAt: now }));
+        const pool = buildEventCandidatePool(normalized);
+        const selected = drawEventCandidates(pool, normalized.observations, day, Math.min(chooseDailyCount(), pool.length));
+        selected.forEach((candidate) => normalized.observations.push(candidateToObservation(candidate, day, now, settings)));
         normalized.eventGeneration = { ...normalized.eventGeneration, lastCheckedDate: day };
         return { data: normalized, generated: true, count: selected.length };
     }
@@ -307,19 +416,10 @@
     function generateActiveEvent(data, date, settings) {
         const normalized = migrateTravelerKeepsake(data);
         const day = localDateKey(date);
-        const candidates = normalized.eventTemplates.filter((item) => item && item.enabled !== false && ['daily', 'character', 'user', 'both'].includes(item.participants) && Object.prototype.hasOwnProperty.call(WEIGHT_VALUES, item.weight));
-        const eligible = candidates.filter((template) => {
-            const cooldown = Math.max(0, Number(template.cooldownDays) || 0);
-            return !cooldown || !normalized.observations.some((observation) => {
-                if (observation.templateId !== template.id || !observation.date) return false;
-                const days = Math.round((new Date(`${day}T00:00:00`) - new Date(`${observation.date}T00:00:00`)) / 86400000);
-                return days >= 0 && days <= cooldown;
-            });
-        });
-        const template = weightedPick(eligible);
-        if (!template) return { data: normalized, generated: false, count: 0 };
+        const selected = drawEventCandidates(buildEventCandidatePool(normalized), normalized.observations, day, 1);
+        if (!selected.length) return { data: normalized, generated: false, count: 0 };
         const now = Date.now();
-        normalized.observations.push({ id: generateTravelerKeepsakeId('observation'), templateId: template.id, date: day, occurredAt: now, title: replaceEventNames(template.title, settings), content: replaceEventNames(template.content, settings), participants: template.participants, categoryId: template.categoryId || null, tags: Array.isArray(template.tags) ? template.tags.slice() : [], createdAt: now });
+        normalized.observations.push(candidateToObservation(selected[0], day, now, settings));
         return { data: normalized, generated: true, count: 1 };
     }
 
@@ -411,6 +511,8 @@
         initializeEventCatalog,
         generateDailyEvents,
         generateActiveEvent,
+        buildEventCandidatePool,
+        drawEventCandidates,
         KEYWORD_CATEGORIES: KEYWORD_CATEGORIES.map(([id,name]) => ({id,name})), TEMPLATE_PLACEHOLDERS: TEMPLATE_PLACEHOLDERS.slice(), validateCompositionTemplate,
         getStorageKey: getTravelerKeepsakeStorageKey,
         generateId: generateTravelerKeepsakeId,

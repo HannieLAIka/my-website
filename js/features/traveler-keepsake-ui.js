@@ -78,12 +78,7 @@
     async function loadKeepsakeData() {
         try {
             keepsakeData = await global.TravelerKeepsake.load();
-            const catalogData = global.TravelerKeepsake.initializeEventCatalog(keepsakeData);
-            if (catalogData.eventCategories.length !== (keepsakeData.eventCategories || []).length || catalogData.eventTemplates.length !== (keepsakeData.eventTemplates || []).length) {
-                keepsakeData = await global.TravelerKeepsake.save(catalogData);
-            } else {
-                keepsakeData = catalogData;
-            }
+            keepsakeData = await ensureEventCatalogInitialized(keepsakeData);
             const daily = global.TravelerKeepsake.generateDailyEvents(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {});
             if (daily.generated) keepsakeData = await global.TravelerKeepsake.save(daily.data);
             return keepsakeData;
@@ -94,10 +89,29 @@
         }
     }
 
+    async function ensureEventCatalogInitialized(data) {
+        const before = JSON.stringify({
+            eventTemplates: data.eventTemplates,
+            eventCategories: data.eventCategories,
+            compositionTemplates: data.compositionTemplates,
+            keywordLibrary: data.keywordLibrary
+        });
+        const initialized = global.TravelerKeepsake.initializeEventCatalog(data);
+        const after = JSON.stringify({
+            eventTemplates: initialized.eventTemplates,
+            eventCategories: initialized.eventCategories,
+            compositionTemplates: initialized.compositionTemplates,
+            keywordLibrary: initialized.keywordLibrary
+        });
+        const changed = before !== after;
+        return changed ? await global.TravelerKeepsake.save(initialized) : initialized;
+    }
+
     global.checkTravelerDailyEvents = async function () {
         try {
             const data = await global.TravelerKeepsake.load();
-            const daily = global.TravelerKeepsake.generateDailyEvents(data, new Date(), typeof settings !== 'undefined' ? settings : {});
+            const initialized = await ensureEventCatalogInitialized(data);
+            const daily = global.TravelerKeepsake.generateDailyEvents(initialized, new Date(), typeof settings !== 'undefined' ? settings : {});
             if (daily.generated) await global.TravelerKeepsake.save(daily.data);
             if (keepsakeData && daily.generated) { keepsakeData = daily.data; if (activeSection === 'observations') renderObservationsMain(); }
             return daily;
@@ -163,11 +177,13 @@
         }).join('');
         const filterButtons = [['all', '全部'], ['system', '系统'], ['enabled', '已启用'], ['disabled', '已停用']].map(([value, label]) => `<button type="button" class="${eventFilter === value ? 'active' : ''}" data-event-filter="${value}">${label}</button>`).join('');
         const categoryOptions = categories.map((category) => `<option value="${escapeHtml(category.id)}" ${eventCategoryFilter === category.id ? 'selected' : ''}>${escapeHtml(category.name)}</option>`).join('');
-        const empty = `<div class="traveler-keepsake-empty"><i class="fas fa-feather"></i><p>事件图鉴中还没有词条。添加一些故事，让未来的旅程拥有更多意外。</p><button type="button" class="modal-btn modal-btn-primary" id="open-traveler-event-form-empty"><i class="fas fa-plus"></i> 添加第一条事件</button></div>`;
+        const empty = eventSearch || eventCategoryFilter !== 'all' || eventFilter !== 'all'
+            ? '<div class="traveler-keepsake-empty"><i class="fas fa-search"></i><p>没有找到相关事件</p></div>'
+            : '<div class="traveler-keepsake-empty"><i class="fas fa-feather"></i><p>事件图鉴中还没有词条。添加一些故事，让未来的旅程拥有更多意外。</p><button type="button" class="modal-btn modal-btn-primary" id="open-traveler-event-form-empty"><i class="fas fa-plus"></i> 添加第一条事件</button></div>';
         panel.innerHTML = `<button type="button" class="traveler-keepsake-back" id="back-to-observations"><i class="fas fa-arrow-left"></i> 返回旅途见闻</button><div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-book-atlas"></i></div><div><h2>旅途事件库</h2><p>管理已经编写好的完整旅途事件。</p></div></div><div class="traveler-event-toolbar"><div class="traveler-event-summary">共 ${all.length} 条 · 已启用 ${all.filter((item) => item.enabled !== false).length} 条</div><button type="button" class="modal-btn modal-btn-primary" id="open-traveler-event-form"><i class="fas fa-plus"></i> 添加事件</button></div><div class="traveler-event-filters">${filterButtons}</div><div class="traveler-event-tools"><input id="traveler-event-search" value="${escapeHtml(eventSearch)}" placeholder="搜索事件名称或内容"><select id="traveler-event-category-filter"><option value="all">全部类别</option>${categoryOptions}</select><button type="button" class="modal-btn modal-btn-secondary" id="manage-traveler-event-categories">管理类别</button></div>${cards || empty}`;
         panel.querySelectorAll('[data-catalog-section]').forEach((button) => button.addEventListener('click', () => { catalogSection = button.dataset.catalogSection; renderEventTemplates(); }));
         document.querySelectorAll('[data-event-filter]').forEach((button) => button.addEventListener('click', () => { eventFilter = button.dataset.eventFilter; renderEventTemplates(); }));
-        document.getElementById('traveler-event-search')?.addEventListener('input', (event) => { eventSearch = event.target.value; renderEventTemplates(); });
+        document.getElementById('traveler-event-search')?.addEventListener('input', (event) => { eventSearch = event.target.value; const cursor = event.target.selectionStart; renderEventTemplates(); const next = document.getElementById('traveler-event-search'); if (next) { next.focus(); next.setSelectionRange(cursor, cursor); } });
         document.getElementById('traveler-event-category-filter')?.addEventListener('change', (event) => { eventCategoryFilter = event.target.value; renderEventTemplates(); });
         document.getElementById('manage-traveler-event-categories')?.addEventListener('click', manageEventCategories);
         document.getElementById('open-traveler-event-form')?.addEventListener('click', () => openEventForm());
@@ -189,12 +205,16 @@
     function renderCompositionWorkshop() {
         const panel = document.getElementById('traveler-keepsake-panel');
         const templates = keepsakeData.compositionTemplates || [];
-        const cards = templates.map((item) => `<article class="traveler-composition-card"><div><strong>${escapeHtml(item.title || '未命名模板')}</strong><p>${escapeHtml(item.content || '')}</p><small>${item.source === 'system' ? '系统模板' : '自定义模板'}</small></div>${item.source === 'system' ? '' : `<button type="button" data-composition-edit="${escapeHtml(item.id)}" aria-label="编辑模板"><i class="fas fa-pen"></i></button>`}</article>`).join('');
+        const editIcon = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8.5 2l2.5 2.5L4 11.5H1.5V9L8.5 2z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>';
+        const trashIcon = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><line x1="2" y1="3" x2="11" y2="3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M4.5 3V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V3"/><path d="M3.5 3.5l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>';
+        const cards = templates.map((item) => `<article class="traveler-composition-card"><div class="traveler-composition-info"><strong>${escapeHtml(item.title || '未命名模板')}</strong><p>${escapeHtml(item.content || '')}</p><small>${item.source === 'system' ? '系统模板' : '自定义模板'}</small></div>${item.source === 'system' ? '' : `<div class="traveler-composition-actions"><button type="button" class="reply-action-mini edit-btn" data-composition-edit="${escapeHtml(item.id)}" aria-label="编辑模板" title="编辑">${editIcon}</button><button type="button" class="reply-action-mini delete-btn" data-composition-delete="${escapeHtml(item.id)}" aria-label="删除模板" title="删除">${trashIcon}</button></div>`}</article>`).join('');
         panel.innerHTML = `<button type="button" class="traveler-keepsake-back" id="back-to-catalog-home"><i class="fas fa-arrow-left"></i> 返回事件图鉴</button><div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-scroll"></i></div><div><h2>事件模板工坊</h2><p>管理关键词组合系统使用的句式模板，与旅途事件库保持独立。</p></div></div><div class="traveler-event-toolbar"><span class="traveler-event-summary">${templates.length} 条模板</span><button class="modal-btn modal-btn-primary" id="add-composition-template">添加模板</button></div>${cards || '<div class="traveler-keepsake-empty"><i class="fas fa-scroll"></i><p>尚未整理组合模板。</p></div>'}`;
         panel.querySelector('#back-to-catalog-home')?.addEventListener('click', () => { catalogSection = 'home'; renderEventTemplates(); });
         panel.querySelector('#add-composition-template')?.addEventListener('click', () => openCompositionForm());
         panel.querySelectorAll('[data-composition-edit]').forEach((button) => button.addEventListener('click', () => openCompositionForm(button.dataset.compositionEdit)));
+        panel.querySelectorAll('[data-composition-delete]').forEach((button) => button.addEventListener('click', () => deleteCompositionTemplate(button.dataset.compositionDelete)));
     }
+    async function deleteCompositionTemplate(id) { const item=keepsakeData.compositionTemplates.find((entry)=>entry.id===id); if(!item||item.source!=='user'||!global.confirm(`确定要删除「${item.title}」吗？\n\n删除后，该自定义组合模板将无法恢复。`))return; const old=keepsakeData.compositionTemplates; keepsakeData.compositionTemplates=old.filter((entry)=>entry.id!==id); try{await global.TravelerKeepsake.save(keepsakeData);renderCompositionWorkshop();global.showNotification?.('组合模板已删除','success');}catch(error){keepsakeData.compositionTemplates=old;showKeepsakeError(error);} }
     function setupCompositionPlaceholderButtons() { const wrap=document.getElementById('composition-template-placeholder-buttons'); if(!wrap)return; const labels={人物:'人物',人物A:'人物 A',人物B:'人物 B',地点:'地点',来处:'来处',做了什么:'行为',发现物:'发现物',遭遇:'遭遇',活动:'活动'}; wrap.innerHTML=(global.TravelerKeepsake.TEMPLATE_PLACEHOLDERS||[]).map((name)=>`<button type="button" data-placeholder="${escapeHtml(name)}">{${escapeHtml(labels[name]||name)}}</button>`).join(''); wrap.querySelectorAll('[data-placeholder]').forEach((button)=>button.addEventListener('click',()=>{const input=document.getElementById('composition-template-content');const token=`{${button.dataset.placeholder}}`;const start=input.selectionStart,end=input.selectionEnd;input.setRangeText(token,start,end,'end');input.focus();updateCompositionValidation();})); }
     function openCompositionForm(id) { const item = id ? keepsakeData.compositionTemplates.find((entry) => entry.id === id) : null; if (item?.source === 'system') return; editingCompositionId = id || null; const form = document.getElementById('composition-template-form'); form.elements.title.value = item?.title || ''; form.elements.content.value = item?.content || ''; document.getElementById('composition-template-modal-title').textContent=item?'编辑组合模板':'添加组合模板'; setupCompositionPlaceholderButtons(); updateCompositionValidation(); const modal = document.getElementById('composition-template-modal'); modal.setAttribute('aria-hidden','false'); if (typeof global.showModal === 'function') global.showModal(modal); else modal.style.display='flex'; }
     function closeCompositionForm() { const modal=document.getElementById('composition-template-modal'); if(typeof global.hideModal==='function')global.hideModal(modal);else modal.style.display='none'; modal.setAttribute('aria-hidden','true'); editingCompositionId=null; }
