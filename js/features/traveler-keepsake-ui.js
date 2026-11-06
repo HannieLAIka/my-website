@@ -80,7 +80,13 @@
             keepsakeData = await global.TravelerKeepsake.load();
             keepsakeData = await ensureEventCatalogInitialized(keepsakeData);
             const daily = global.TravelerKeepsake.generateDailyEvents(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {});
-            if (daily.generated) keepsakeData = await global.TravelerKeepsake.save(daily.data);
+            if (daily.generated) {
+                keepsakeData = await global.TravelerKeepsake.save(daily.data);
+            }
+            const today = localDayKey(new Date());
+            keepsakeData.observations
+                .filter((observation) => observation.date === today)
+                .forEach(syncTravelerEventToChat);
             return keepsakeData;
         } catch (error) {
             keepsakeData = null;
@@ -112,11 +118,28 @@
             const data = await global.TravelerKeepsake.load();
             const initialized = await ensureEventCatalogInitialized(data);
             const daily = global.TravelerKeepsake.generateDailyEvents(initialized, new Date(), typeof settings !== 'undefined' ? settings : {});
-            if (daily.generated) await global.TravelerKeepsake.save(daily.data);
+            keepsakeData = initialized;
+            if (daily.generated) {
+                await global.TravelerKeepsake.save(daily.data);
+                keepsakeData = daily.data;
+            }
+            const today = localDayKey(new Date());
+            daily.data.observations
+                .filter((observation) => observation.date === today)
+                .forEach(syncTravelerEventToChat);
             if (keepsakeData && daily.generated) { keepsakeData = daily.data; if (activeSection === 'observations') renderObservationsMain(); }
             return daily;
         } catch (error) { showKeepsakeError(error); return null; }
     };
+
+    function syncTravelerEventToChat(observation) {
+        if (!observation || !observation.id || typeof addMessage !== 'function') return false;
+        if (typeof messages !== 'undefined' && messages.some((message) => message.type === 'traveler-event' && message.travelerEventId === observation.id)) return false;
+        const category = (keepsakeData?.eventCategories || []).find((item) => item.id === observation.categoryId);
+        const participantsLabel = { daily: '日常见闻', character: '角色同行', user: '旅人参与', both: '共同经历', none: '日常见闻' }[observation.participants] || '';
+        addMessage({ id: `traveler_event_${observation.id}`, sender: 'system', text: '', timestamp: new Date(observation.occurredAt || Date.now()), status: 'received', favorited: false, note: null, type: 'traveler-event', travelerEventId: observation.id, travelerEventSnapshot: { title: observation.title, content: observation.content, date: observation.date, categoryId: observation.categoryId || null, categoryName: category?.name || observation.categoryId || null, participants: observation.participants || null, participantsLabel } });
+        return true;
+    }
 
     function chapterRecordsCount(chapterId) {
         return ['observations', 'keepsakes', 'gifts', 'quotes', 'chronicles'].reduce((total, name) => total + global.TravelerKeepsake.getRecordsForChapter(keepsakeData, name, chapterId).length, 0);
@@ -180,19 +203,31 @@
         const empty = eventSearch || eventCategoryFilter !== 'all' || eventFilter !== 'all'
             ? '<div class="traveler-keepsake-empty"><i class="fas fa-search"></i><p>没有找到相关事件</p></div>'
             : '<div class="traveler-keepsake-empty"><i class="fas fa-feather"></i><p>事件图鉴中还没有词条。添加一些故事，让未来的旅程拥有更多意外。</p><button type="button" class="modal-btn modal-btn-primary" id="open-traveler-event-form-empty"><i class="fas fa-plus"></i> 添加第一条事件</button></div>';
-        panel.innerHTML = `<button type="button" class="traveler-keepsake-back" id="back-to-observations"><i class="fas fa-arrow-left"></i> 返回旅途见闻</button><div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-book-atlas"></i></div><div><h2>旅途事件库</h2><p>管理已经编写好的完整旅途事件。</p></div></div><div class="traveler-event-toolbar"><div class="traveler-event-summary">共 ${all.length} 条 · 已启用 ${all.filter((item) => item.enabled !== false).length} 条</div><button type="button" class="modal-btn modal-btn-primary" id="open-traveler-event-form"><i class="fas fa-plus"></i> 添加事件</button></div><div class="traveler-event-filters">${filterButtons}</div><div class="traveler-event-tools"><input id="traveler-event-search" value="${escapeHtml(eventSearch)}" placeholder="搜索事件名称或内容"><select id="traveler-event-category-filter"><option value="all">全部类别</option>${categoryOptions}</select><button type="button" class="modal-btn modal-btn-secondary" id="manage-traveler-event-categories">管理类别</button></div>${cards || empty}`;
+        panel.innerHTML = `<button type="button" class="traveler-keepsake-back" id="back-to-observations"><i class="fas fa-arrow-left"></i> 返回旅途见闻</button><div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-book-atlas"></i></div><div><h2>旅途事件库</h2><p>管理已经编写好的完整旅途事件。</p></div></div><div class="traveler-event-toolbar"><div class="traveler-event-summary">共 ${all.length} 条 · 已启用 ${all.filter((item) => item.enabled !== false).length} 条</div><button type="button" class="modal-btn modal-btn-primary" id="open-traveler-event-form"><i class="fas fa-plus"></i> 添加事件</button></div><div class="traveler-event-filters">${filterButtons}</div><div class="traveler-event-tools"><input id="traveler-event-search" value="${escapeHtml(eventSearch)}" placeholder="搜索事件名称或内容"><select id="traveler-event-category-filter"><option value="all">全部类别</option>${categoryOptions}</select><button type="button" class="modal-btn modal-btn-secondary" id="manage-traveler-event-categories">管理类别</button></div><div id="traveler-event-results">${cards || empty}</div>`;
         panel.querySelectorAll('[data-catalog-section]').forEach((button) => button.addEventListener('click', () => { catalogSection = button.dataset.catalogSection; renderEventTemplates(); }));
         document.querySelectorAll('[data-event-filter]').forEach((button) => button.addEventListener('click', () => { eventFilter = button.dataset.eventFilter; renderEventTemplates(); }));
-        document.getElementById('traveler-event-search')?.addEventListener('input', (event) => { eventSearch = event.target.value; const cursor = event.target.selectionStart; renderEventTemplates(); const next = document.getElementById('traveler-event-search'); if (next) { next.focus(); next.setSelectionRange(cursor, cursor); } });
+        const searchInput = document.getElementById('traveler-event-search');
+        if (searchInput) {
+            let isComposing = false;
+            searchInput.addEventListener('compositionstart', () => { isComposing = true; });
+            searchInput.addEventListener('compositionend', (event) => {
+                isComposing = false;
+                eventSearch = event.target.value;
+                renderEventSearchResults();
+            });
+            searchInput.addEventListener('input', (event) => {
+                if (isComposing || event.isComposing) return;
+                eventSearch = event.target.value;
+                renderEventSearchResults();
+            });
+        }
         document.getElementById('traveler-event-category-filter')?.addEventListener('change', (event) => { eventCategoryFilter = event.target.value; renderEventTemplates(); });
         document.getElementById('manage-traveler-event-categories')?.addEventListener('click', manageEventCategories);
         document.getElementById('open-traveler-event-form')?.addEventListener('click', () => openEventForm());
         document.getElementById('open-traveler-event-form-empty')?.addEventListener('click', () => openEventForm());
         document.getElementById('back-to-observations')?.addEventListener('click', () => { catalogSection = 'home'; renderEventTemplates(); });
-        panel.querySelectorAll('[data-event-action="edit"]').forEach((button) => button.addEventListener('click', () => openEventForm(button.dataset.eventId)));
-        panel.querySelectorAll('[data-event-action="toggle"]').forEach((button) => button.addEventListener('click', () => toggleEvent(button.dataset.eventId)));
         bindEventCatalogDelegation();
-        panel.querySelectorAll('[data-event-action="copy"]').forEach((button) => button.addEventListener('click', () => copySystemEvent(button.dataset.eventId)));
+        bindEventResultActions();
         document.querySelectorAll('.traveler-keepsake-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.keepsakeSection === 'observations'));
     }
 
@@ -274,7 +309,43 @@
         document.getElementById('explore-unknown')?.addEventListener('click', exploreUnknown);
         panel.querySelectorAll('.traveler-observation-bookmark').forEach((button) => button.addEventListener('click', () => assignObservationChapter(button.dataset.observationId)));
     }
-    async function exploreUnknown() { try { const result = global.TravelerKeepsake.generateActiveEvent(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {}); if (!result.generated) return global.showNotification?.('四周暂时没有新的动静，稍后再来探索吧。', 'info'); keepsakeData = await global.TravelerKeepsake.save(result.data); renderObservationsMain(); global.showNotification?.('新的见闻已落入纪事匣', 'success'); } catch (error) { showKeepsakeError(error); } }
+
+    function renderEventSearchResults() {
+        const panel = document.getElementById('traveler-keepsake-panel');
+        const results = panel?.querySelector('#traveler-event-results');
+        if (!panel || !results || !keepsakeData) return;
+        const categories = keepsakeData.eventCategories || [];
+        const filtered = (keepsakeData.eventTemplates || []).filter((item) => {
+            const tabMatch = eventFilter === 'all' ||
+                (eventFilter === 'system' && item.source === 'system') ||
+                (eventFilter === 'enabled' && item.enabled !== false) ||
+                (eventFilter === 'disabled' && item.enabled === false);
+            const categoryMatch = eventCategoryFilter === 'all' || item.categoryId === eventCategoryFilter;
+            const searchMatch = !eventSearch || `${item.title || ''} ${item.content || ''}`.toLowerCase().includes(eventSearch.toLowerCase());
+            return tabMatch && categoryMatch && searchMatch;
+        });
+        const cards = filtered.map((item) => {
+            const category = categories.find((entry) => entry.id === item.categoryId);
+            const participantLabel = { daily: '日常内容', character: '角色联动', user: '用户联动', both: '双方联动', none: '日常内容' }[item.participants] || '日常内容';
+            const actions = item.source === 'system'
+                ? `<button type="button" data-event-action="toggle" data-event-id="${escapeHtml(item.id)}" aria-label="切换启用状态"><i class="fas ${item.enabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}"></i></button><button type="button" data-event-action="copy" data-event-id="${escapeHtml(item.id)}" aria-label="复制为自定义事件"><i class="fas fa-copy"></i></button>`
+                : `<button type="button" data-event-action="edit" data-event-id="${escapeHtml(item.id)}" aria-label="编辑事件"><i class="fas fa-pen"></i></button><button type="button" data-event-action="toggle" data-event-id="${escapeHtml(item.id)}" aria-label="切换启用状态"><i class="fas ${item.enabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}"></i></button><button type="button" data-event-action="delete" data-event-id="${escapeHtml(item.id)}" aria-label="删除事件"><i class="fas fa-trash"></i></button>`;
+            const tags = Array.isArray(item.tags) && item.tags.length ? `<div class="traveler-event-tags">${item.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</div>` : '';
+            return `<article class="traveler-event-card"><div class="traveler-event-main"><div class="traveler-event-top"><h3>${escapeHtml(item.title || '未命名事件')}</h3><span class="traveler-event-status ${item.enabled === false ? 'disabled' : 'enabled'}">${item.enabled === false ? '已停用' : '已启用'}</span></div><p>${escapeHtml(item.content || '')}</p><div class="traveler-event-meta"><span>${participantLabel}</span><span>${escapeHtml(category?.name || '未分类')}</span><span>权重：${item.weight === 'rare' ? '罕见' : item.weight === 'common' ? '常见' : '普通'}</span><span>冷却 ${Number(item.cooldownDays) || 0} 天</span></div>${tags}</div><div class="traveler-event-actions">${actions}</div></article>`;
+        }).join('');
+        results.innerHTML = cards || '<div class="traveler-keepsake-empty"><i class="fas fa-search"></i><p>没有找到相关事件</p></div>';
+        bindEventResultActions();
+    }
+
+    function bindEventResultActions() {
+        const panel = document.getElementById('traveler-keepsake-panel');
+        if (!panel) return;
+        panel.querySelectorAll('[data-event-action="edit"]').forEach((button) => button.addEventListener('click', () => openEventForm(button.dataset.eventId)));
+        panel.querySelectorAll('[data-event-action="toggle"]').forEach((button) => button.addEventListener('click', () => toggleEvent(button.dataset.eventId)));
+        panel.querySelectorAll('[data-event-action="copy"]').forEach((button) => button.addEventListener('click', () => copySystemEvent(button.dataset.eventId)));
+    }
+
+    async function exploreUnknown() { try { const result = global.TravelerKeepsake.generateActiveEvent(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {}); if (!result.generated) return global.showNotification?.('四周暂时没有新的动静，稍后再来探索吧。', 'info'); keepsakeData = await global.TravelerKeepsake.save(result.data); result.observations.forEach(syncTravelerEventToChat); renderObservationsMain(); global.showNotification?.('新的见闻已落入纪事匣', 'success'); } catch (error) { showKeepsakeError(error); } }
     async function assignObservationChapter(id) { const item = (keepsakeData.observations || []).find((entry) => entry.id === id); if (!item) return; const chapters = keepsakeData.chapters || []; const overlay = document.createElement('div'); overlay.className = 'traveler-observation-chapter-picker'; overlay.innerHTML = `<div class="traveler-observation-chapter-picker-card"><h3>收藏至旅途篇章</h3><div class="traveler-observation-chapter-options">${chapters.map((chapter) => `<button type="button" data-chapter-id="${escapeHtml(chapter.id)}">${escapeHtml(chapter.title)}</button>`).join('')}</div><div class="traveler-observation-chapter-picker-actions">${item.chapterId ? '<button type="button" data-clear-chapter="true">取消收藏</button>' : ''}<button type="button" data-cancel-picker="true">取消</button><button type="button" data-new-chapter="true">新建篇章</button></div></div>`; document.body.appendChild(overlay); const close = () => overlay.remove(); overlay.querySelector('[data-cancel-picker]')?.addEventListener('click', close); overlay.querySelector('[data-clear-chapter]')?.addEventListener('click', async () => { const old = item.chapterId; item.chapterId = null; try { await global.TravelerKeepsake.save(keepsakeData); close(); renderObservationsMain(); } catch (error) { item.chapterId = old; showKeepsakeError(error); } }); overlay.querySelectorAll('[data-chapter-id]').forEach((button) => button.addEventListener('click', async () => { const old = item.chapterId; item.chapterId = button.dataset.chapterId; try { await global.TravelerKeepsake.save(keepsakeData); close(); renderObservationsMain(); } catch (error) { item.chapterId = old; showKeepsakeError(error); } })); overlay.querySelector('[data-new-chapter]')?.addEventListener('click', () => { close(); openChapterForm(null, id); }); }
 
     function openEventForm(eventId) {

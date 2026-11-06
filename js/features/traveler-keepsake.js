@@ -99,7 +99,15 @@
         { id: 'event_system_herb', title: '{角色名}的林间发现', content: '{角色名}在林间发现了一株罕见的草药，决定仔细观察它的生长环境。', participants: 'character', categoryId: 'category_exploration', weight: 'normal', tags: ['森林', '采集'], cooldownDays: 3 },
         { id: 'event_system_campfire', title: '篝火旁的一段闲谈', content: '夜色降临，篝火映亮了营地，也为两人留出一段安静交谈的时光。', participants: 'both', categoryId: 'category_camp', weight: 'common', tags: ['营地', '交谈'], cooldownDays: 1 },
         { id: 'event_system_potato_new_badge', title: '土豆骑士的微型盾牌', content: '在村庄广场的公告板旁，旅人发现一面只有掌心大小的木盾。盾面刻着土豆骑士的徽记，旁边还留着一行歪歪扭扭的誓言。', participants: 'daily', categoryId: 'category_daily', weight: 'normal', tags: ['土豆', '骑士', '村庄'], cooldownDays: 10 },
+        { id: 'event_system_potato_herb_garden', title: '土豆骑士的药草园', content: '村外的小药草园里插着一块歪斜的木牌，上面画着土豆骑士的盾徽。园丁说，这位小小的守护者每天都会把被风吹倒的幼苗重新扶好。', participants: 'daily', categoryId: 'category_nature', weight: 'normal', tags: ['土豆', '药草', '村庄'], cooldownDays: 10 },
+        { id: 'event_system_potato_market', title: '土豆骑士的集市委托', content: '集市摊主请旅人寻找一枚不见了的铜铃。线索一路指向土豆骑士留下的迷你盾牌，铃声则从一篮刚收成的土豆里传来。', participants: 'both', categoryId: 'category_conversation', weight: 'common', tags: ['土豆', '集市', '委托'], cooldownDays: 10 },
+        { id: 'event_system_potato_mushroom', title: '土豆骑士与夜光菌', content: '雨后的树根旁长出一圈淡蓝色夜光菌，旁边立着土豆骑士的徽记。采药人留下纸条提醒：只记录它们的位置，不要在夜里贸然采摘。', participants: 'character', categoryId: 'category_exploration', weight: 'rare', tags: ['土豆', '夜光菌', '森林'], cooldownDays: 12 },
+        { id: 'event_system_potato_lost_map', title: '土豆骑士的迷你地图', content: '一张折得整整齐齐的小地图夹在旅店留言簿中，地图角落盖着土豆骑士的印记，标出了溪边一处适合避雨的石棚。', participants: 'user', categoryId: 'category_exploration', weight: 'common', tags: ['土豆', '地图', '旅店'], cooldownDays: 10 },
         { id: 'event_system_cangzhu_new_archive', title: '仓助先生的道路档案', content: '驿站掌柜展示了一册用不同颜色线绳装订的道路档案，每一页都记着仓助先生曾经走过的一段路，以及那段路最可靠的休息地点。', participants: 'daily', categoryId: 'category_exploration', weight: 'rare', tags: ['仓助', '驿站', '道路'], cooldownDays: 14 },
+        { id: 'event_system_cangzhu_waystone', title: '仓助先生留下的路标', content: '分岔路口的石柱上刻着仓助先生惯用的记号：水源、避风处和最近的驿站都标得清清楚楚，唯独最短的路线被一枚小小的问号代替。', participants: 'character', categoryId: 'category_exploration', weight: 'normal', tags: ['仓助', '路标', '道路'], cooldownDays: 14 },
+        { id: 'event_system_cangzhu_courier', title: '仓助先生的迟到包裹', content: '驿站收到一个迟了几周才抵达的包裹，封口写着仓助先生的名字。里面不是贵重物品，而是一叠附有详细路线的沿途风景速写。', participants: 'daily', categoryId: 'category_daily', weight: 'common', tags: ['仓助', '驿站', '包裹'], cooldownDays: 14 },
+        { id: 'event_system_cangzhu_rain_shelter', title: '仓助先生标记的避雨处', content: '骤雨来临时，旅人循着仓助先生画在旧木牌上的箭头找到一处干燥岩棚。棚内还留着一张纸，写明附近溪水上涨时应走的高处小径。', participants: 'both', categoryId: 'category_accident', weight: 'normal', tags: ['仓助', '避雨', '山路'], cooldownDays: 14 },
+        { id: 'event_system_cangzhu_tea', title: '仓助先生推荐的茶摊', content: '穿过边境驿站时，摊主认出了旅人手里的路线册，说那是仓助先生留下的版本，并热情推荐了一处只有熟客才知道的山茶摊。', participants: 'user', categoryId: 'category_camp', weight: 'common', tags: ['仓助', '茶摊', '驿站'], cooldownDays: 14 },
         { id: 'event_system_merchant_spice', title: '旅行商队的香料盒', content: '一支旅行商队在路边短暂停留，商人打开一只刻着月桂纹的香料盒，邀请路人辨认其中的气味。', participants: 'daily', categoryId: 'category_daily', weight: 'common', tags: ['商队', '风味'], cooldownDays: 2 },
         { id: 'event_system_tavern_song', title: '酒馆里的无名小调', content: '村口酒馆里，一位吟游诗人唱起关于远方的轻快小调，最后一句歌词似乎是临时为在座旅人写的。', participants: 'daily', categoryId: 'category_daily', weight: 'common', tags: ['酒馆', '吟游诗人'], cooldownDays: 2 },
         { id: 'event_system_village_custom', title: '村庄的月灯习俗', content: '路过的村民邀请旅人参加月灯仪式：每个人都要在灯罩上写下一句希望，再把灯挂到老橡树下。', participants: 'daily', categoryId: 'category_daily', weight: 'normal', tags: ['村庄', '习俗'], cooldownDays: 7 },
@@ -404,23 +412,25 @@
     function generateDailyEvents(data, date, settings) {
         const normalized = migrateTravelerKeepsake(data);
         const day = localDateKey(date);
-        if (normalized.eventGeneration.lastCheckedDate === day) return { data: normalized, generated: false, count: 0 };
+        if (normalized.eventGeneration.lastCheckedDate === day) return { data: normalized, generated: false, count: 0, observations: [] };
         const now = Date.now();
         const pool = buildEventCandidatePool(normalized);
         const selected = drawEventCandidates(pool, normalized.observations, day, Math.min(chooseDailyCount(), pool.length));
-        selected.forEach((candidate) => normalized.observations.push(candidateToObservation(candidate, day, now, settings)));
+        const observations = selected.map((candidate) => candidateToObservation(candidate, day, now, settings));
+        normalized.observations.push(...observations);
         normalized.eventGeneration = { ...normalized.eventGeneration, lastCheckedDate: day };
-        return { data: normalized, generated: true, count: selected.length };
+        return { data: normalized, generated: true, count: observations.length, observations };
     }
 
     function generateActiveEvent(data, date, settings) {
         const normalized = migrateTravelerKeepsake(data);
         const day = localDateKey(date);
         const selected = drawEventCandidates(buildEventCandidatePool(normalized), normalized.observations, day, 1);
-        if (!selected.length) return { data: normalized, generated: false, count: 0 };
+        if (!selected.length) return { data: normalized, generated: false, count: 0, observations: [] };
         const now = Date.now();
-        normalized.observations.push(candidateToObservation(selected[0], day, now, settings));
-        return { data: normalized, generated: true, count: 1 };
+        const observations = [candidateToObservation(selected[0], day, now, settings)];
+        normalized.observations.push(...observations);
+        return { data: normalized, generated: true, count: observations.length, observations };
     }
 
     /**

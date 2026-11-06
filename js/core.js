@@ -966,6 +966,35 @@ function createMessageFragment(msg, prevMsg, nextMsg, lastSenderRef) {
         return fragment;
     }
 
+    if (msg.type === 'traveler-event') {
+        const eventCard = document.createElement('div');
+        eventCard.className = 'traveler-event-message';
+        eventCard.dataset.id = msg.id;
+        eventCard.dataset.travelerEventId = msg.travelerEventId || '';
+        const snapshot = msg.travelerEventSnapshot || {};
+        const header = document.createElement('div');
+        header.className = 'traveler-event-message-header';
+        const mark = document.createElement('i');
+        mark.className = 'fas fa-compass';
+        const label = document.createElement('span');
+        label.textContent = '旅途见闻';
+        header.append(mark, label);
+        const title = document.createElement('h3');
+        title.textContent = snapshot.title || '未命名见闻';
+        const content = document.createElement('p');
+        content.textContent = snapshot.content || '这条见闻的内容已经失效。';
+        const meta = document.createElement('div');
+        meta.className = 'traveler-event-message-meta';
+        if (snapshot.date) { const date = document.createElement('span'); date.textContent = snapshot.date; meta.appendChild(date); }
+        if (snapshot.categoryName || snapshot.categoryId) { const category = document.createElement('span'); category.textContent = snapshot.categoryName || snapshot.categoryId; meta.appendChild(category); }
+        if (snapshot.participantsLabel || snapshot.participants) { const participants = document.createElement('span'); participants.textContent = snapshot.participantsLabel || ({ daily: '日常见闻', character: '角色同行', user: '旅人参与', both: '共同经历', none: '日常见闻' }[snapshot.participants] || snapshot.participants); meta.appendChild(participants); }
+        eventCard.append(header, title, content);
+        if (meta.childNodes.length) eventCard.appendChild(meta);
+        fragment.appendChild(eventCard);
+        lastSenderRef.current = 'system';
+        return fragment;
+    }
+
     let showTimestamp = true;
     if (settings.timeFormat === 'off') {
         showTimestamp = false;
@@ -1588,7 +1617,43 @@ if (!isBatchMode && type === 'normal') {
             ro.observe(inputArea);
         })();
 
-        window.simulateReply = function() {
+function getAvailableReplyPool() {
+    if (!Array.isArray(customReplies)) return [];
+    const disabledItems = (() => {
+        try {
+            const raw = localStorage.getItem('disabledReplyItems');
+            return raw ? new Set(JSON.parse(raw)) : new Set();
+        } catch (e) { return new Set(); }
+    })();
+    const disabledGroupItems = new Set();
+    (window.customReplyGroups || []).forEach(g => {
+        if (g.disabled && Array.isArray(g.items)) g.items.forEach(item => disabledGroupItems.add(item));
+    });
+    return customReplies
+        .filter(r => !disabledItems.has(r) && !disabledGroupItems.has(r))
+        .map(r => String(r || '').trim())
+        .filter(Boolean);
+}
+
+window.drawExistingReplyCards = function(options = {}) {
+    const count = Math.max(0, Number.isInteger(options.count) ? options.count : 1);
+    const allowDuplicates = options.allowDuplicates === true;
+    const pool = getAvailableReplyPool();
+    if (!pool.length || count === 0) return { cards: [], requested: count, available: pool.length };
+    const cards = [];
+    const remaining = pool.slice();
+    while (cards.length < count && (allowDuplicates ? pool.length : remaining.length)) {
+        const source = allowDuplicates ? pool : remaining;
+        const index = Math.floor(Math.random() * source.length);
+        const picked = source[index];
+        if (!picked) break;
+        cards.push(picked);
+        if (!allowDuplicates) remaining.splice(index, 1);
+    }
+    return { cards, requested: count, available: pool.length };
+};
+
+window.simulateReply = function() {
             function showTypingIndicator() {
                 if (!settings.typingIndicatorEnabled) return;
                 const tiWrapper = document.getElementById('typing-indicator-wrapper');
@@ -1644,21 +1709,8 @@ if (partnerPersonas && partnerPersonas.length > 0 && Math.random() < 0.3) {
                 showNotification('回复库为空，请先到「自定义回复」中添加内容', 'info', 3500);
                 return;
             }
-            const disabledItemsOnce = (() => {
-                try {
-                    const raw = localStorage.getItem('disabledReplyItems');
-                    return raw ? new Set(JSON.parse(raw)) : new Set();
-                } catch (e) { return new Set(); }
-            })();
-            const disabledGroupItemsOnce = new Set();
-            (window.customReplyGroups || []).forEach(g => {
-                if (g.disabled && Array.isArray(g.items)) g.items.forEach(item => disabledGroupItemsOnce.add(item));
-            });
-            const replyPoolOnce = customReplies
-                .filter(r => !disabledItemsOnce.has(r) && !disabledGroupItemsOnce.has(r))
-                .map(r => String(r || '').trim())
-                .filter(Boolean);
-            if (!replyPoolOnce.length) {
+            const replyCards = window.drawExistingReplyCards({ count: replyCount, allowDuplicates: true });
+            if (!replyCards.cards.length) {
                 showNotification('回复库可用内容为空（可能被分组禁用或屏蔽），请到「自定义回复」中调整', 'info', 4000);
                 return;
             }
@@ -1674,16 +1726,8 @@ if (partnerPersonas && partnerPersonas.length > 0 && Math.random() < 0.3) {
                 delay += settings.replyDelayMin + Math.random() * delayRange;
                 setTimeout(() => {
                     try {
-                    const replyPool = replyPoolOnce;
-                    // 被屏蔽或无效项直接换下一个，尽量保证每次都产出可用回复
-                    let replyText = '';
-                    for (let t = 0; t < 6; t++) {
-                        const picked = replyPool[Math.floor(Math.random() * replyPool.length)];
-                        if (picked && String(picked).trim()) {
-                            replyText = String(picked).trim();
-                            break;
-                        }
-                    }
+                    // drawExistingReplyCards 已沿用原有资格筛选；允许重复以保持原聊天行为。
+                    const replyText = replyCards.cards[i] || '';
                     if (!replyText && i === replyCount - 1) {
                         (function(){try{if(window._typingIndicatorAutoHideTimer){clearTimeout(window._typingIndicatorAutoHideTimer);window._typingIndicatorAutoHideTimer=null;}}catch(e){}var _tiW=document.getElementById('typing-indicator-wrapper');if(_tiW){var _tiInner=_tiW.querySelector('.typing-indicator');if(_tiInner){_tiInner.classList.add('hiding');setTimeout(function(){_tiW.style.display='none';if(_tiInner)_tiInner.classList.remove('hiding');},240);}else{_tiW.style.display='none';}}})();
                         return;
