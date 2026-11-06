@@ -31,6 +31,15 @@
         ['category_accident', '意外'], ['category_conversation', '交谈']
     ];
     const KEYWORD_CATEGORIES = [['location','地点'],['origin','来处'],['person','人物'],['action','行为'],['discovery','发现物'],['encounter','遭遇'],['activity','活动']];
+    const SYSTEM_KEYWORDS = {
+        location: ['幽暗森林','古老橡树林','林间溪流','山间隘口','荒废神殿','古代遗迹','地下洞窟','废弃矿井','村庄集市','边境驿站'],
+        origin: ['深林深处','山脉另一侧','远方村庄','古代遗迹','地底世界','旅行商人的货箱','失落王国','德鲁伊结社','冒险者公会','古老图书馆'],
+        person: ['迷路的旅行者','年迈的德鲁伊','年轻的游侠','精灵猎人','矮人工匠','半身人商贩','流浪吟游诗人','隐居的草药师','神秘的朝圣者','受伤的冒险者'],
+        action: ['采集草药','寻找水源','修补装备','搭建营地','追踪动物','观察足迹','辨认植物','阅读古代铭文','探索遗迹','整理行囊'],
+        discovery: ['稀有草药','发光苔藓','古代金币','破损的护符','精灵工艺品','矮人符文石','古老地图残片','未知生物的羽毛','奇异矿石','魔法水晶'],
+        encounter: ['一只受伤的鹿','一群迁徙的鸟','一只好奇的狐狸','一头野猪','一群林地精怪','一只迷路的幼兽','一位迷路的旅人','突然出现的浓雾','意外的暴雨','倒塌的古树'],
+        activity: ['共同采集草药','在溪边休息','分享旅行故事','围坐篝火','整理旅行物资','观察星空','制作旅行纪念品','烹饪晚餐','练习狩猎技巧','研究古代地图']
+    };
     const TEMPLATE_PLACEHOLDERS = ['人物','人物A','人物B','地点','来处','做了什么','发现物','遭遇','活动'];
     const SYSTEM_COMPOSITION_TEMPLATES = [
         { id:'composition_system_encounter', title:'旅途遭遇', content:'{人物}在{地点}{做了什么}。' },
@@ -222,6 +231,8 @@
         });
         result.eventCategories = categories;
         result.eventTemplates = Array.isArray(result.eventTemplates) ? result.eventTemplates : [];
+        const keywordNow = Date.now();
+        Object.entries(SYSTEM_KEYWORDS).forEach(([category, values]) => values.forEach((value) => { if (!result.keywordLibrary.some((item) => item && item.source === 'system' && item.category === category && item.value === value)) result.keywordLibrary.push({ id: `keyword_system_${category}_${value}`, category, value, source: 'system', enabled: true, createdAt: keywordNow, updatedAt: keywordNow }); }));
         SYSTEM_TEMPLATES.forEach((template) => {
             const existing = result.eventTemplates.find((item) => item && item.id === template.id);
             if (!existing) {

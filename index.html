@@ -1441,6 +1441,23 @@
         </div>
     </div>
 
+    <div class="modal traveler-keepsake-form-modal" id="composition-template-modal" aria-hidden="true">
+        <div class="modal-content traveler-keepsake-form-content composition-template-editor">
+            <div class="modal-title"><i class="fas fa-scroll"></i><span id="composition-template-modal-title">添加组合模板</span></div>
+            <form id="composition-template-form" novalidate>
+                <label class="traveler-keepsake-form-label" for="composition-template-title">模板标题 <span>*</span></label>
+                <input class="modal-input" id="composition-template-title" name="title" maxlength="80" required placeholder="例如：林间发现">
+                <label class="traveler-keepsake-form-label" for="composition-template-content">模板内容 <span>*</span></label>
+                <textarea class="modal-textarea" id="composition-template-content" name="content" maxlength="1200" required placeholder="在这里编写事件内容，使用下方的占位符，让系统从关键词素材库中填入对应内容。"></textarea>
+                <div class="composition-template-placeholders"><strong>可用占位符</strong><div id="composition-template-placeholder-buttons"></div><p>占位符会在未来生成事件时，从对应分类的关键词素材中选取内容进行替换。同一个占位符可以重复使用。{人物A} 和 {人物B} 用于区分两位不同人物。</p></div>
+                <div class="composition-template-validation" id="composition-template-validation"></div>
+                <div class="composition-template-example"><strong>示例：林间发现</strong><p>你和{人物}在{地点}散步时，<br>发现了一株罕见的{发现物}。</p></div>
+                <div class="composition-template-preview"><strong>模板预览</strong><p id="composition-template-preview">模板预览将显示于此。</p></div>
+                <div class="modal-buttons traveler-keepsake-form-actions"><button type="button" class="modal-btn modal-btn-secondary" id="cancel-composition-template">取消</button><button type="submit" class="modal-btn modal-btn-primary">保存模板</button></div>
+            </form>
+        </div>
+    </div>
+
     <div class="modal traveler-keepsake-form-modal" id="traveler-keepsake-event-form-modal" aria-hidden="true">
         <div class="modal-content traveler-keepsake-form-content">
             <div class="modal-title"><i class="fas fa-eye"></i><span id="traveler-keepsake-event-form-title">添加事件</span></div>
