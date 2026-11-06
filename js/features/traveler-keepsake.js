@@ -10,7 +10,7 @@
     'use strict';
 
     const STORAGE_KEY = 'travelerKeepsake';
-    const CURRENT_VERSION = 5;
+    const CURRENT_VERSION = 6;
     const CHAPTER_COLLECTION = 'chapters';
     const COLLECTION_NAMES = [
         CHAPTER_COLLECTION,
@@ -29,6 +29,16 @@
         ['category_daily', '日常'], ['category_exploration', '探索'],
         ['category_nature', '自然与动物'], ['category_camp', '营地'],
         ['category_accident', '意外'], ['category_conversation', '交谈']
+    ];
+    const KEYWORD_CATEGORIES = [['location','地点'],['origin','来处'],['person','人物'],['action','行为'],['discovery','发现物'],['encounter','遭遇'],['activity','活动']];
+    const TEMPLATE_PLACEHOLDERS = ['人物','人物A','人物B','地点','来处','做了什么','发现物','遭遇','活动'];
+    const SYSTEM_COMPOSITION_TEMPLATES = [
+        { id:'composition_system_encounter', title:'旅途遭遇', content:'{人物}在{地点}{做了什么}。' },
+        { id:'composition_system_guest', title:'远方来客', content:'来自{来处}的{人物}出现在{地点}。' },
+        { id:'composition_system_discovery', title:'偶然发现', content:'{人物}在{地点}发现了{发现物}。' },
+        { id:'composition_system_accident', title:'意外插曲', content:'当{人物}经过{地点}时，遭遇了{遭遇}。' },
+        { id:'composition_system_activity', title:'共同活动', content:'{人物A}和{人物B}在{地点}{活动}。' },
+        { id:'composition_system_mishap', title:'旅途中的意外', content:'{人物}原本打算在{地点}{做了什么}，却意外遇到了{遭遇}。' }
     ];
     const SYSTEM_TEMPLATES = [
         { id: 'event_system_herb', title: '{角色名}的林间发现', content: '{角色名}在林间发现了一株罕见的草药，决定仔细观察它的生长环境。', participants: 'character', categoryId: 'category_exploration', weight: 'normal', tags: ['森林', '采集'], cooldownDays: 3 },
@@ -72,6 +82,7 @@
             quotes: [],
             chronicles: []
             ,eventGeneration: { lastCheckedDate: null }
+            ,keywordLibrary: [], compositionTemplates: []
         };
     }
 
@@ -87,6 +98,7 @@
             quotes: defaults.quotes.slice(),
             chronicles: defaults.chronicles.slice(),
             eventGeneration: { ...defaults.eventGeneration }
+            ,keywordLibrary: defaults.keywordLibrary.slice(), compositionTemplates: defaults.compositionTemplates.slice()
         };
     }
 
@@ -132,6 +144,8 @@
         });
         if (!isPlainObject(normalized.eventGeneration)) normalized.eventGeneration = { lastCheckedDate: null };
         if (typeof normalized.eventGeneration.lastCheckedDate !== 'string') normalized.eventGeneration.lastCheckedDate = null;
+        if (!Array.isArray(normalized.keywordLibrary)) normalized.keywordLibrary = [];
+        if (!Array.isArray(normalized.compositionTemplates)) normalized.compositionTemplates = [];
 
         // Normalize legacy template participant values without touching the
         // historical observations collection or their content snapshots.
@@ -171,6 +185,7 @@
             if (typeof migrated.eventGeneration.lastCheckedDate !== 'string') migrated.eventGeneration.lastCheckedDate = null;
             migrated.version = 5;
         }
+        if (version < 6) { migrated.keywordLibrary = Array.isArray(migrated.keywordLibrary) ? migrated.keywordLibrary : []; migrated.compositionTemplates = Array.isArray(migrated.compositionTemplates) ? migrated.compositionTemplates : []; migrated.version = 6; }
 
         if (migrated.version < CURRENT_VERSION) {
             // Reserved for future schema migrations.
@@ -218,8 +233,11 @@
                 existing.updatedAt = Date.now();
             }
         });
+        SYSTEM_COMPOSITION_TEMPLATES.forEach((template) => { if (!result.compositionTemplates.some((item) => item && item.id === template.id)) result.compositionTemplates.push({ ...template, source:'system', enabled:true, weight:'normal', createdAt:Date.now(), updatedAt:Date.now() }); });
         return result;
     }
+
+    function validateCompositionTemplate(content) { const matches = String(content || '').match(/\{([^{}]+)\}/g) || []; const unknown = matches.map((x) => x.slice(1, -1)).filter((x) => !TEMPLATE_PLACEHOLDERS.includes(x)); const valid = matches.filter((x) => TEMPLATE_PLACEHOLDERS.includes(x.slice(1, -1))); return { valid: valid.length > 0 && unknown.length === 0, placeholders: [...new Set(valid.map((x) => x.slice(1, -1)))], unknown }; }
 
     function localDateKey(date) {
         const d = date instanceof Date ? date : new Date(date || Date.now());
@@ -382,6 +400,7 @@
         initializeEventCatalog,
         generateDailyEvents,
         generateActiveEvent,
+        KEYWORD_CATEGORIES: KEYWORD_CATEGORIES.map(([id,name]) => ({id,name})), TEMPLATE_PLACEHOLDERS: TEMPLATE_PLACEHOLDERS.slice(), validateCompositionTemplate,
         getStorageKey: getTravelerKeepsakeStorageKey,
         generateId: generateTravelerKeepsakeId,
         load: loadTravelerKeepsake,

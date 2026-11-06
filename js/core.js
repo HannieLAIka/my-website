@@ -137,7 +137,7 @@ function loadMoreHistory() {
 
         function getDefaultSettings() {
             return {
-                partnerName: "梦角",
+                partnerName: "角色名",
                 myName: "我",
                 myStatus: "在线",
                 partnerStatus: "在线",

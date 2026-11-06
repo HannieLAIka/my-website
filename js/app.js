@@ -33,6 +33,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof localforage === 'undefined') {
             console.warn('LocalForage 未加载，将使用 localStorage 降级方案');
         }
+        try {
+            if (window.navigator.storage && typeof window.navigator.storage.persist === 'function') {
+                window.navigator.storage.persist().then((persisted) => {
+                    console.info('[storage] 持久化存储请求结果:', persisted ? '已启用' : '浏览器未授予（仍使用现有本地存储）');
+                }).catch((error) => console.warn('[storage] 持久化存储请求失败:', error));
+            }
+        } catch (error) {
+            console.warn('[storage] 持久化存储能力检查失败:', error);
+        }
 
         try {
             const emergencyBackupRaw = localStorage.getItem('BACKUP_V1_critical');
