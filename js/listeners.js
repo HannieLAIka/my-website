@@ -230,6 +230,19 @@ if (target.classList.contains('delete-btn')) {
 
         function initHeaderAndSettingsListeners() {
 
+            const keepsakeEntry = DOMElements.sessionModal.managerBtn;
+            if (keepsakeEntry && !keepsakeEntry.dataset.keepsakeListenerBound) {
+                keepsakeEntry.dataset.keepsakeListenerBound = 'true';
+                keepsakeEntry.addEventListener('click', () => {
+                    if (typeof window.openTravelerKeepsake === 'function') {
+                        window.openTravelerKeepsake();
+                    } else {
+                        renderSessionList();
+                        showModal(DOMElements.sessionModal.modal);
+                    }
+                });
+            }
+
             const openNameModal = (isPartner) => {
                 const modal = DOMElements.editModal;
                 showModal(modal.modal, modal.input);
@@ -490,6 +503,9 @@ if (_chatSettingsEl) _chatSettingsEl.addEventListener('click', () => {
     const rrTextBtn = document.getElementById('rr-style-text');
     if (rrIconBtn) { rrIconBtn.className = rrStyle === 'icon' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; rrIconBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
     if (rrTextBtn) { rrTextBtn.className = rrStyle === 'text' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; rrTextBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
+    const defaultChatTab = document.querySelector('.cs-tab[data-panel="cs-panel-chat"]');
+    if (defaultChatTab) window.switchCsTab(defaultChatTab);
+    syncTravelerInteractionSettingsUI();
     
     showModal(DOMElements.chatModal.modal);
     setupAvatarFrameSettings();
@@ -1018,6 +1034,45 @@ if (_chatSettingsEl) _chatSettingsEl.addEventListener('click', () => {
                 if (panel) panel.classList.add('active');
             };
 
+            function syncTravelerInteractionSettingsUI() {
+                const enabledToggle = document.getElementById('traveler-interaction-enabled-toggle');
+                if (enabledToggle) enabledToggle.classList.toggle('active', settings.travelerInteractionEnabled !== false);
+                const frequency = settings.travelerInteractionFrequency || 'normal';
+                document.querySelectorAll('#traveler-interaction-frequency .traveler-choice-btn').forEach((button) => {
+                    button.classList.toggle('active', button.dataset.value === frequency);
+                });
+                const cooldown = document.getElementById('traveler-interaction-cooldown');
+                if (cooldown) cooldown.value = String(settings.travelerInteractionCooldownMs || 1800000);
+            }
+
+            const travelerInteractionTab = document.querySelector('.cs-tab[data-panel="cs-panel-traveler-interaction"]');
+            const travelerInteractionBack = document.getElementById('back-traveler-interaction');
+            const travelerInteractionToggle = document.getElementById('traveler-interaction-enabled-toggle');
+            if (travelerInteractionTab) travelerInteractionTab.addEventListener('click', syncTravelerInteractionSettingsUI);
+            syncTravelerInteractionSettingsUI();
+            if (travelerInteractionBack) travelerInteractionBack.addEventListener('click', () => {
+                const chatTab = document.querySelector('.cs-tab[data-panel="cs-panel-chat"]');
+                if (chatTab) window.switchCsTab(chatTab);
+            });
+            if (travelerInteractionToggle) travelerInteractionToggle.addEventListener('click', () => {
+                settings.travelerInteractionEnabled = settings.travelerInteractionEnabled === false;
+                syncTravelerInteractionSettingsUI();
+                throttledSaveData();
+            });
+            document.querySelectorAll('#traveler-interaction-frequency .traveler-choice-btn').forEach((button) => {
+                button.addEventListener('click', () => {
+                    settings.travelerInteractionFrequency = button.dataset.value;
+                    syncTravelerInteractionSettingsUI();
+                    throttledSaveData();
+                });
+            });
+            const travelerInteractionCooldown = document.getElementById('traveler-interaction-cooldown');
+            if (travelerInteractionCooldown) travelerInteractionCooldown.addEventListener('change', (event) => {
+                settings.travelerInteractionCooldownMs = Number(event.target.value) || 1800000;
+                syncTravelerInteractionSettingsUI();
+                throttledSaveData();
+            });
+
             function updateDelayUI() {
                 minDelaySlider.value = settings.replyDelayMin;
                 const minSec = settings.replyDelayMin / 1000;
@@ -1463,13 +1518,6 @@ if (_cancelEnvEl) _cancelEnvEl.addEventListener('click', () => {
 
 
 
-        DOMElements.sessionModal.managerBtn.addEventListener('click', () => {
-            if (typeof window.openTravelerKeepsake === 'function') {
-                window.openTravelerKeepsake();
-            } else {
-                renderSessionList(); showModal(DOMElements.sessionModal.modal);
-            }
-        });
         DOMElements.sessionModal.createBtn.addEventListener('click', async () => {
             await createNewSession(false);
             renderSessionList();

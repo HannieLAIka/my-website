@@ -52,6 +52,10 @@
     let eventSearch = '';
     let catalogSection = 'home';
     let editingCompositionId = null;
+    let randomTravelerEventTimer = null;
+    let randomTravelerEventRunPromise = null;
+    const TRAVELER_EVENT_WAIT_MIN_MS = 30 * 60 * 1000;
+    const TRAVELER_EVENT_WAIT_MAX_MS = 3 * 60 * 60 * 1000;
 
     function todayString() {
         const date = new Date(); const pad = (n) => String(n).padStart(2, '0');
@@ -75,26 +79,6 @@
         if (typeof global.showNotification === 'function') global.showNotification('旅途纪事匣加载或保存失败，请稍后重试', 'error', 5000);
     }
 
-    async function loadKeepsakeData() {
-        try {
-            keepsakeData = await global.TravelerKeepsake.load();
-            keepsakeData = await ensureEventCatalogInitialized(keepsakeData);
-            const daily = global.TravelerKeepsake.generateDailyEvents(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {});
-            if (daily.generated) {
-                keepsakeData = await global.TravelerKeepsake.save(daily.data);
-            }
-            const today = localDayKey(new Date());
-            keepsakeData.observations
-                .filter((observation) => observation.date === today)
-                .forEach(syncTravelerEventToChat);
-            return keepsakeData;
-        } catch (error) {
-            keepsakeData = null;
-            showKeepsakeError(error);
-            return null;
-        }
-    }
-
     async function ensureEventCatalogInitialized(data) {
         const before = JSON.stringify({
             eventTemplates: data.eventTemplates,
@@ -109,36 +93,184 @@
             compositionTemplates: initialized.compositionTemplates,
             keywordLibrary: initialized.keywordLibrary
         });
-        const changed = before !== after;
-        return changed ? await global.TravelerKeepsake.save(initialized) : initialized;
+        return before === after ? initialized : await global.TravelerKeepsake.save(initialized);
     }
 
-    global.checkTravelerDailyEvents = async function () {
+    async function loadKeepsakeData() {
         try {
-            const data = await global.TravelerKeepsake.load();
-            const initialized = await ensureEventCatalogInitialized(data);
-            const daily = global.TravelerKeepsake.generateDailyEvents(initialized, new Date(), typeof settings !== 'undefined' ? settings : {});
-            keepsakeData = initialized;
-            if (daily.generated) {
-                await global.TravelerKeepsake.save(daily.data);
-                keepsakeData = daily.data;
-            }
-            const today = localDayKey(new Date());
-            daily.data.observations
-                .filter((observation) => observation.date === today)
-                .forEach(syncTravelerEventToChat);
-            if (keepsakeData && daily.generated) { keepsakeData = daily.data; if (activeSection === 'observations') renderObservationsMain(); }
-            return daily;
-        } catch (error) { showKeepsakeError(error); return null; }
+            keepsakeData = await global.TravelerKeepsake.load();
+            keepsakeData = await ensureEventCatalogInitialized(keepsakeData);
+            return keepsakeData;
+        } catch (error) {
+            keepsakeData = null;
+            showKeepsakeError(error);
+            throw error;
+        }
+    }
+
+    function randomTravelerEventWait() {
+        return TRAVELER_EVENT_WAIT_MIN_MS + Math.floor(Math.random() * (TRAVELER_EVENT_WAIT_MAX_MS - TRAVELER_EVENT_WAIT_MIN_MS + 1));
+    }
+
+    function clearRandomTravelerEventTimer() {
+        if (randomTravelerEventTimer !== null) clearTimeout(randomTravelerEventTimer);
+        randomTravelerEventTimer = null;
+    }
+
+    function scheduleNextRandomTravelerEvent() {
+        if (document.visibilityState === 'hidden' || randomTravelerEventTimer !== null) return;
+        const delay = randomTravelerEventWait();
+        randomTravelerEventTimer = setTimeout(async () => {
+            randomTravelerEventTimer = null;
+            if (document.visibilityState === 'hidden') return;
+            if (randomTravelerEventRunPromise) return;
+            randomTravelerEventRunPromise = runRandomTravelerEvent().finally(() => {
+                randomTravelerEventRunPromise = null;
+                scheduleNextRandomTravelerEvent();
+            });
+            await randomTravelerEventRunPromise;
+        }, delay);
+    }
+
+    async function runRandomTravelerEvent() {
+        try {
+            keepsakeData = await global.TravelerKeepsake.load();
+            keepsakeData = await ensureEventCatalogInitialized(keepsakeData);
+            const result = global.TravelerKeepsake.generateScheduledEvent(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {});
+            if (!result.generated) return { generated: false };
+            keepsakeData = await global.TravelerKeepsake.save(result.data);
+            result.observations.forEach(syncTravelerEventToChat);
+            await handleNewTravelerObservations(result.observations);
+            if (activeSection === 'observations') renderObservationsMain();
+            return { generated: true, observations: result.observations };
+        } catch (error) {
+            console.error('[travelerRandomEvent] 本轮抽取失败:', error);
+            if (randomTravelerEventTimer === null && document.visibilityState === 'visible') scheduleNextRandomTravelerEvent();
+        }
+    }
+
+    global.checkRandomTravelerEvents = function () {
+        if (document.visibilityState === 'hidden') {
+            clearRandomTravelerEventTimer();
+            return null;
+        }
+        if (randomTravelerEventRunPromise) return randomTravelerEventRunPromise;
+        if (randomTravelerEventTimer === null) scheduleNextRandomTravelerEvent();
+        return { scheduled: randomTravelerEventTimer !== null };
+    };
+    global.pauseRandomTravelerEvents = function () {
+        clearRandomTravelerEventTimer();
     };
 
     function syncTravelerEventToChat(observation) {
         if (!observation || !observation.id || typeof addMessage !== 'function') return false;
-        if (typeof messages !== 'undefined' && messages.some((message) => message.type === 'traveler-event' && message.travelerEventId === observation.id)) return false;
+        if (typeof messages !== 'undefined') {
+            const existing = messages.find((message) => message.type === 'traveler-event' && message.travelerEventId === observation.id);
+            if (existing) {
+                existing.travelerEventSnapshot = { ...(existing.travelerEventSnapshot || {}), interactionStatus: observation.interactionStatus || 'idle' };
+                return false;
+            }
+        }
         const category = (keepsakeData?.eventCategories || []).find((item) => item.id === observation.categoryId);
         const participantsLabel = { daily: '日常见闻', character: '角色同行', user: '旅人参与', both: '共同经历', none: '日常见闻' }[observation.participants] || '';
-        addMessage({ id: `traveler_event_${observation.id}`, sender: 'system', text: '', timestamp: new Date(observation.occurredAt || Date.now()), status: 'received', favorited: false, note: null, type: 'traveler-event', travelerEventId: observation.id, travelerEventSnapshot: { title: observation.title, content: observation.content, date: observation.date, categoryId: observation.categoryId || null, categoryName: category?.name || observation.categoryId || null, participants: observation.participants || null, participantsLabel } });
+        addMessage({ id: `traveler_event_${observation.id}`, sender: 'system', text: '', timestamp: new Date(observation.occurredAt || Date.now()), status: 'received', favorited: false, note: null, type: 'traveler-event', travelerEventId: observation.id, travelerEventSnapshot: { title: observation.title, content: observation.content, date: observation.date, categoryId: observation.categoryId || null, categoryName: category?.name || observation.categoryId || null, participants: observation.participants || null, participantsLabel, interactionStatus: observation.interactionStatus || 'idle' } });
         return true;
+    }
+
+    const TRAVELER_AUTO_RESPONSE_PROBABILITIES = { low: 0.30, normal: 0.45, high: 0.65 };
+    const travelerAutoResponseInFlight = new Set();
+    function findTravelerAutoResponseMessage(observationId) {
+        if (typeof messages === 'undefined') return null;
+        return messages.find((message) => message && message.travelerEventId === observationId && message.travelerAutoResponse === true) || null;
+    }
+    function getTravelerReplyPool() {
+        return (async () => {
+        if (typeof window.ensureTravelerReplyLibrary === 'function') await window.ensureTravelerReplyLibrary();
+        return (typeof travelerReplies !== 'undefined' ? travelerReplies : []).filter(card => card && card.enabled !== false && typeof card.text === 'string' && card.text.trim()).map(card => card.text.trim());
+        })();
+    }
+    async function tryPassiveTravelerResponse(observation) {
+        if (!observation || observation.travelerAutoResponseStatus === 'responded' || observation.travelerAutoResponseStatus === 'skipped' || observation.travelerAutoResponseDecision === 'miss' || observation.travelerAutoResponseDecision === 'no_cards') return;
+        if (travelerAutoResponseInFlight.has(observation.id)) return;
+        travelerAutoResponseInFlight.add(observation.id);
+        try {
+        if (!observation.travelerAutoResponseDecision) {
+            const enabled = typeof settings === 'undefined' || settings.travelerInteractionEnabled !== false;
+            if (!enabled) {
+                observation.interactionStatus = 'responded';
+                await global.TravelerKeepsake.save(keepsakeData);
+                return;
+            }
+            const probability = TRAVELER_AUTO_RESPONSE_PROBABILITIES[(typeof settings !== 'undefined' && settings.travelerInteractionFrequency) || 'normal'] || TRAVELER_AUTO_RESPONSE_PROBABILITIES.normal;
+            observation.travelerAutoResponseDecision = Math.random() < probability ? 'hit' : 'miss';
+            observation.travelerAutoResponseStatus = observation.travelerAutoResponseDecision === 'hit' ? 'pending' : 'skipped';
+            await global.TravelerKeepsake.save(keepsakeData);
+            if (observation.travelerAutoResponseDecision === 'miss') return;
+        }
+        if (observation.travelerAutoResponseDecision !== 'hit') return;
+        const existingResponse = findTravelerAutoResponseMessage(observation.id);
+        if (existingResponse) {
+            observation.travelerAutoResponseStatus = 'responded';
+            observation.interactionResponseIds = [existingResponse.id];
+            await global.TravelerKeepsake.save(keepsakeData);
+            return;
+        }
+        let pool;
+        try { pool = await getTravelerReplyPool(); } catch (error) { console.error('[travelerAutoResponse] 字卡池初始化失败:', error); return; }
+        if (!pool.length) {
+            observation.travelerAutoResponseDecision = 'no_cards';
+            observation.travelerAutoResponseStatus = 'skipped';
+            await global.TravelerKeepsake.save(keepsakeData);
+            return;
+        }
+        observation.travelerAutoResponseStatus = 'pending';
+        await global.TravelerKeepsake.save(keepsakeData);
+        const text = pool[Math.floor(Math.random() * pool.length)];
+        const responseId = `traveler_auto_response_${observation.id}`;
+        addMessage({ id: responseId, sender: (typeof settings !== 'undefined' && settings.partnerName) || '哈尔辛', text, timestamp: new Date(), status: 'received', favorited: false, note: null, type: 'normal', travelerEventId: observation.id, travelerEventResponseId: responseId, travelerAutoResponse: true });
+        let chatMessageSaved = false;
+        try {
+            await localforage.setItem(getStorageKey('chatMessages'), messages);
+            chatMessageSaved = true;
+            observation.travelerAutoResponseStatus = 'responded';
+            observation.interactionResponseIds = [responseId];
+            await global.TravelerKeepsake.save(keepsakeData);
+        } catch (error) {
+            if (chatMessageSaved) {
+                observation.travelerAutoResponseStatus = 'responded';
+                observation.interactionResponseIds = [responseId];
+            } else {
+                observation.travelerAutoResponseStatus = 'failed';
+                if (typeof messages !== 'undefined') messages = messages.filter(message => message.id !== responseId);
+                if (typeof renderMessages === 'function') renderMessages(true);
+            }
+            try { await global.TravelerKeepsake.save(keepsakeData); } catch (_) {}
+            console.error('[travelerAutoResponse] 保存失败:', error);
+        }
+        } finally {
+            travelerAutoResponseInFlight.delete(observation.id);
+        }
+    }
+    async function handleNewTravelerObservations(observations) {
+        for (const generatedObservation of (observations || [])) {
+            const observation = (keepsakeData?.observations || []).find((item) => item && item.id === generatedObservation.id);
+            if (!observation) continue;
+            try { await tryPassiveTravelerResponse(observation); }
+            catch (error) { console.error('[travelerAutoResponse] 判定或状态保存失败:', error); }
+        }
+    }
+    async function recoverPendingTravelerAutoResponses(data) {
+        for (const observation of (data?.observations || [])) {
+            if (observation.travelerAutoResponseDecision === 'hit' && observation.travelerAutoResponseStatus !== 'responded' && observation.travelerAutoResponseStatus !== 'skipped') {
+                if (findTravelerAutoResponseMessage(observation.id)) {
+                    observation.travelerAutoResponseStatus = 'responded';
+                    observation.interactionResponseIds = [findTravelerAutoResponseMessage(observation.id).id];
+                    await global.TravelerKeepsake.save(data);
+                } else {
+                    await tryPassiveTravelerResponse(observation);
+                }
+            }
+        }
     }
 
     function chapterRecordsCount(chapterId) {
@@ -302,13 +434,60 @@
         const today = todayString();
         const todayItems = observations.filter((item) => localDayKey(item.date || item.occurredAt) === today).slice().sort((a, b) => Number(b.occurredAt || b.createdAt || 0) - Number(a.occurredAt || a.createdAt || 0));
         const older = observations.filter((item) => !todayItems.includes(item)).slice().sort((a, b) => Number(b.occurredAt || b.createdAt || 0) - Number(a.occurredAt || a.createdAt || 0));
-        const renderItems = (items) => items.map((item) => `<article class="traveler-observation-card"><div class="traveler-observation-date"><strong>${formatHarptosDate(item.date || item.occurredAt)}</strong><small>${escapeHtml(item.date || localDayKey(item.occurredAt))}</small></div><div class="traveler-observation-body"><h3>${escapeHtml(item.title || '未命名见闻')}</h3><p>${escapeHtml(item.content || '')}</p></div><button type="button" class="traveler-observation-bookmark ${item.chapterId ? 'is-saved' : ''}" data-observation-id="${escapeHtml(item.id)}" aria-label="收藏至篇章"><i class="far fa-bookmark"></i></button></article>`).join('');
+        const renderItems = (items) => items.map((item) => {
+            return `<article class="traveler-observation-card"><div class="traveler-observation-date"><strong>${formatHarptosDate(item.date || item.occurredAt)}</strong><small>${escapeHtml(item.date || localDayKey(item.occurredAt))}</small></div><div class="traveler-observation-body"><h3>${escapeHtml(item.title || '未命名见闻')}</h3><p>${escapeHtml(item.content || '')}</p></div><button type="button" class="traveler-observation-bookmark ${item.chapterId ? 'is-saved' : ''}" data-observation-id="${escapeHtml(item.id)}" aria-label="收藏至篇章"><i class="far fa-bookmark"></i></button></article>`;
+        }).join('');
         panel.innerHTML = `<div class="traveler-keepsake-panel-heading"><div class="traveler-keepsake-panel-icon"><i class="fas fa-eye"></i></div><div><h2>旅途见闻</h2><p>记录已经发生的相遇、意外与沿途故事。事件图鉴只保存未来可能发生的模板。</p></div></div><div class="traveler-observation-actions"><button type="button" class="modal-btn modal-btn-primary" id="explore-unknown"><i class="fas fa-compass"></i> 探索未知</button><button type="button" class="modal-btn modal-btn-secondary" id="open-traveler-event-catalog"><i class="fas fa-book-atlas"></i> 事件图鉴</button></div><section class="traveler-observation-section"><h3>今日见闻</h3>${renderItems(todayItems) || '<div class="traveler-observation-empty">今日还没有新的见闻。每一次相遇与意外，都可能成为值得珍藏的故事。</div>'}</section><section class="traveler-observation-section"><h3>往日见闻</h3>${renderItems(older) || '<div class="traveler-observation-empty">旅途还没有留下往日记录。</div>'}</section>`;
         document.querySelectorAll('.traveler-keepsake-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.keepsakeSection === 'observations'));
         document.getElementById('open-traveler-event-catalog')?.addEventListener('click', renderEventTemplates);
         document.getElementById('explore-unknown')?.addEventListener('click', exploreUnknown);
         panel.querySelectorAll('.traveler-observation-bookmark').forEach((button) => button.addEventListener('click', () => assignObservationChapter(button.dataset.observationId)));
     }
+
+    async function invitePartnerToDiscussObservation(observationId) {
+        const observation = (keepsakeData?.observations || []).find((item) => item && item.id === observationId);
+        if (!observation || observation.interactionStatus === 'responded' || observation.interactionStatus === 'pending') return;
+        const responseCount = String(observation.content || '').length > 120 ? 2 : 1;
+        observation.interactionStatus = 'pending';
+        observation.interactionResponseIds = [];
+        document.dispatchEvent(new CustomEvent('traveler-interaction-state-changed', { detail: { observationId, status: 'pending' } }));
+        const responseIds = [];
+        try {
+            keepsakeData = await global.TravelerKeepsake.save(keepsakeData);
+            renderObservationsMain();
+            if (!global.drawExistingReplyCards) throw new Error('现有字卡库不可用');
+            const result = global.drawExistingReplyCards({ count: responseCount, allowDuplicates: false });
+            if (!result || !Array.isArray(result.cards) || result.cards.length === 0) throw new Error('当前没有可用的字卡');
+            result.cards.forEach((text, index) => {
+                const responseId = `traveler_event_response_${observation.id}_${Date.now()}_${index}`;
+                responseIds.push(responseId);
+                addMessage({ id: responseId, sender: (typeof settings !== 'undefined' && settings.partnerName) || '哈尔辛', text, timestamp: new Date(), status: 'received', favorited: false, note: null, type: 'normal', travelerEventId: observation.id, travelerEventResponseId: responseId });
+            });
+            if (typeof saveData === 'function') await saveData();
+            observation.interactionResponseIds = responseIds;
+            observation.interactionStatus = 'responded';
+            keepsakeData = await global.TravelerKeepsake.save(keepsakeData);
+            renderObservationsMain();
+            global.showNotification?.('哈尔辛已经回应了这段旅途见闻', 'success');
+            document.dispatchEvent(new CustomEvent('traveler-interaction-state-changed', { detail: { observationId, status: 'responded' } }));
+        } catch (error) {
+            if (responseIds.length && typeof messages !== 'undefined') {
+                const responseIdSet = new Set(responseIds);
+                messages = messages.filter((message) => !responseIdSet.has(message.id));
+            if (typeof renderMessages === 'function') renderMessages(true);
+            try { await localforage.setItem(getStorageKey('chatMessages'), messages); } catch (_) {}
+            }
+            observation.interactionStatus = 'idle';
+            observation.interactionResponseIds = [];
+            try { keepsakeData = await global.TravelerKeepsake.save(keepsakeData); } catch (saveError) { console.error('[travelerInteraction] 状态回滚失败:', saveError); }
+            renderObservationsMain();
+            global.showNotification?.('字卡抽取失败，请稍后再试', 'error');
+            console.error('[travelerInteraction] 主动回应失败:', error);
+            document.dispatchEvent(new CustomEvent('traveler-interaction-state-changed', { detail: { observationId, status: 'idle' } }));
+        }
+    }
+
+    global.invitePartnerToDiscussObservation = invitePartnerToDiscussObservation;
 
     function renderEventSearchResults() {
         const panel = document.getElementById('traveler-keepsake-panel');
@@ -345,7 +524,7 @@
         panel.querySelectorAll('[data-event-action="copy"]').forEach((button) => button.addEventListener('click', () => copySystemEvent(button.dataset.eventId)));
     }
 
-    async function exploreUnknown() { try { const result = global.TravelerKeepsake.generateActiveEvent(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {}); if (!result.generated) return global.showNotification?.('四周暂时没有新的动静，稍后再来探索吧。', 'info'); keepsakeData = await global.TravelerKeepsake.save(result.data); result.observations.forEach(syncTravelerEventToChat); renderObservationsMain(); global.showNotification?.('新的见闻已落入纪事匣', 'success'); } catch (error) { showKeepsakeError(error); } }
+    async function exploreUnknown() { try { const result = global.TravelerKeepsake.generateActiveEvent(keepsakeData, new Date(), typeof settings !== 'undefined' ? settings : {}); if (!result.generated) return global.showNotification?.('四周暂时没有新的动静，稍后再来探索吧。', 'info'); keepsakeData = await global.TravelerKeepsake.save(result.data); result.observations.forEach(syncTravelerEventToChat); await handleNewTravelerObservations(result.observations); renderObservationsMain(); global.showNotification?.('新的见闻已落入纪事匣', 'success'); } catch (error) { showKeepsakeError(error); } }
     async function assignObservationChapter(id) { const item = (keepsakeData.observations || []).find((entry) => entry.id === id); if (!item) return; const chapters = keepsakeData.chapters || []; const overlay = document.createElement('div'); overlay.className = 'traveler-observation-chapter-picker'; overlay.innerHTML = `<div class="traveler-observation-chapter-picker-card"><h3>收藏至旅途篇章</h3><div class="traveler-observation-chapter-options">${chapters.map((chapter) => `<button type="button" data-chapter-id="${escapeHtml(chapter.id)}">${escapeHtml(chapter.title)}</button>`).join('')}</div><div class="traveler-observation-chapter-picker-actions">${item.chapterId ? '<button type="button" data-clear-chapter="true">取消收藏</button>' : ''}<button type="button" data-cancel-picker="true">取消</button><button type="button" data-new-chapter="true">新建篇章</button></div></div>`; document.body.appendChild(overlay); const close = () => overlay.remove(); overlay.querySelector('[data-cancel-picker]')?.addEventListener('click', close); overlay.querySelector('[data-clear-chapter]')?.addEventListener('click', async () => { const old = item.chapterId; item.chapterId = null; try { await global.TravelerKeepsake.save(keepsakeData); close(); renderObservationsMain(); } catch (error) { item.chapterId = old; showKeepsakeError(error); } }); overlay.querySelectorAll('[data-chapter-id]').forEach((button) => button.addEventListener('click', async () => { const old = item.chapterId; item.chapterId = button.dataset.chapterId; try { await global.TravelerKeepsake.save(keepsakeData); close(); renderObservationsMain(); } catch (error) { item.chapterId = old; showKeepsakeError(error); } })); overlay.querySelector('[data-new-chapter]')?.addEventListener('click', () => { close(); openChapterForm(null, id); }); }
 
     function openEventForm(eventId) {
@@ -515,7 +694,13 @@
     function openTravelerKeepsake() {
         const modal = document.getElementById('traveler-keepsake-modal');
         if (!modal) return;
-        loadKeepsakeData().then((data) => { if (!data) return; renderSection(activeSection); modal.setAttribute('aria-hidden', 'false'); if (typeof global.showModal === 'function') global.showModal(modal); else modal.style.display = 'flex'; });
+        loadKeepsakeData().then((data) => {
+            if (!data) return;
+            renderSection(activeSection);
+            modal.setAttribute('aria-hidden', 'false');
+            if (typeof global.showModal === 'function') global.showModal(modal);
+            else modal.style.display = 'flex';
+        }).catch(showKeepsakeError);
     }
 
     function closeTravelerKeepsake() {

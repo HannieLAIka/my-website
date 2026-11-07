@@ -246,6 +246,16 @@
             if (!isPlainObject(item) || item.participants !== 'none') return item;
             return { ...item, participants: 'daily' };
         });
+        normalized.observations = normalized.observations.map((item) => {
+            if (!isPlainObject(item)) return item;
+            return {
+                ...item,
+                interactionStatus: ['idle', 'pending', 'responded'].includes(item.interactionStatus) ? item.interactionStatus : 'idle',
+                interactionResponseIds: Array.isArray(item.interactionResponseIds) ? item.interactionResponseIds.slice() : [],
+                travelerAutoResponseDecision: ['hit', 'miss', 'no_cards'].includes(item.travelerAutoResponseDecision) ? item.travelerAutoResponseDecision : null,
+                travelerAutoResponseStatus: ['pending', 'responded', 'skipped', 'failed'].includes(item.travelerAutoResponseStatus) ? item.travelerAutoResponseStatus : null
+            };
+        });
 
         return normalized;
     }
@@ -433,6 +443,18 @@
         return { data: normalized, generated: true, count: observations.length, observations };
     }
 
+    function generateScheduledEvent(data, date, settings) {
+        const normalized = migrateTravelerKeepsake(data);
+        const day = localDateKey(date);
+        const selected = drawEventCandidates(buildEventCandidatePool(normalized), normalized.observations, day, 1);
+        if (!selected.length) return { data: normalized, generated: false, count: 0, observations: [] };
+        const now = Date.now();
+        const observation = candidateToObservation(selected[0], day, now, settings);
+        const observations = [observation];
+        normalized.observations.push(...observations);
+        return { data: normalized, generated: true, count: 1, observations };
+    }
+
     /**
      * Return records belonging to a chapter. A null/undefined chapterId
      * selects unassociated records; records without chapterId remain valid.
@@ -521,6 +543,7 @@
         initializeEventCatalog,
         generateDailyEvents,
         generateActiveEvent,
+        generateScheduledEvent,
         buildEventCandidatePool,
         drawEventCandidates,
         KEYWORD_CATEGORIES: KEYWORD_CATEGORIES.map(([id,name]) => ({id,name})), TEMPLATE_PLACEHOLDERS: TEMPLATE_PLACEHOLDERS.slice(), validateCompositionTemplate,

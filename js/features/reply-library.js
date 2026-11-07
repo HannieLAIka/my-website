@@ -41,6 +41,67 @@ const GROUP_COLORS = [
     '#868E96','#212529'
 ];
 
+const TRAVELER_REPLY_SYSTEM_CARDS = [
+    '这段经历很有意思，值得慢慢回味。', '我很想知道，接下来还会遇见什么。', '旅途总会在意想不到的地方留下痕迹。',
+    '这让我想起了那些仍未解开的谜团。', '有些发现，确实需要耐心与好奇心。', '我欣赏这种不急于下结论的态度。',
+    '这其中似乎还有一层尚未显现的意味。', '能注意到这样的细节，本身就很难得。', '我承认，这比预想的更加出人意料。',
+    '也许我们应该把它记下来，日后再作比较。', '每一次远行，都会带来一些新的问题。', '这样的景象总能让人重新思考熟悉的事物。',
+    '我对这件事抱有兴趣，但还不想过早判断。', '看来这趟旅程并没有白费。', '有时候，最好的答案藏在一次仔细的观察里。',
+    '这份心意很珍贵，我会记住它。', '我理解你的看法，不过也许还有另一种可能。', '这让周围的一切显得更加生动了。',
+    '如果有机会，我愿意再走一遍那条路。', '这样的偶然相遇往往比计划更值得珍惜。', '我喜欢这份安静而不寻常的感觉。',
+    '先把线索留在手边，时间会帮助我们看清它。', '这听起来像是一段值得讲给旅伴的故事。', '我没有想到会得到这样的结果。',
+    '即使暂时没有答案，探索本身也有意义。', '我会保持警觉，同时不忘欣赏眼前的风景。', '这件事让我感到安心，也带来了一点疑问。',
+    '或许我们可以带着这个问题继续向前。', '我愿意相信其中存在善意，但仍会留意变化。', '旅途中的片刻温柔，同样值得被珍藏。'
+].map((text, index) => ({ id: `traveler_reply_system_${String(index + 1).padStart(2, '0')}`, text, source: 'system', enabled: true }));
+
+function ensureTravelerReplyLibrary() {
+    if (travelerRepliesInitialized) return Promise.resolve();
+    const existing = Array.isArray(travelerReplies) ? travelerReplies : [];
+    const existingIds = new Set(existing.map(item => item && item.id));
+    travelerReplies = existing.concat(TRAVELER_REPLY_SYSTEM_CARDS.filter(card => !existingIds.has(card.id)).map(card => ({ ...card })));
+    travelerRepliesInitialized = true;
+    return typeof saveData === 'function' ? saveData() : Promise.resolve();
+}
+window.ensureTravelerReplyLibrary = ensureTravelerReplyLibrary;
+
+function renderTravelerReplyLibrary() {
+    const list = document.getElementById('custom-replies-list');
+    const title = document.getElementById('cr-modal-title');
+    if (!list) return;
+    const subTabs = document.getElementById('cr-sub-tabs');
+    const addFooter = document.getElementById('add-custom-reply');
+    if (subTabs) { subTabs.innerHTML = ''; subTabs.style.display = 'none'; }
+    if (addFooter) addFooter.style.display = 'none';
+    if (title) title.textContent = '旅途回应';
+    const q = (_searchQuery || '').toLowerCase().trim();
+    const items = travelerReplies.filter(item => !q || String(item.text || '').toLowerCase().includes(q));
+    list.innerHTML = `
+        <div class="traveler-reply-toolbar"><div class="traveler-reply-toolbar-title">独立旅途回应字卡</div><button type="button" class="modal-btn modal-btn-primary" id="traveler-reply-add"><i class="fas fa-plus"></i> 添加字卡</button></div>
+        <div class="traveler-reply-search"><i class="fas fa-search"></i><input id="traveler-reply-search-input" value="${String(_searchQuery || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" placeholder="搜索旅途回应"></div>
+        <div class="traveler-reply-list">${items.length ? items.map((item) => `<article class="traveler-reply-card ${item.enabled === false ? 'is-disabled' : ''}"><div class="traveler-reply-card-main"><div class="traveler-reply-card-text">${String(item.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><span class="traveler-reply-source">${item.source === 'system' ? '系统预设' : '自定义'}</span></div><div class="traveler-reply-card-actions"><button type="button" data-traveler-reply-action="toggle" data-id="${item.id}" title="${item.enabled === false ? '启用' : '停用'}"><i class="fas ${item.enabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}"></i></button><button type="button" data-traveler-reply-action="edit" data-id="${item.id}" title="编辑"><i class="fas fa-pen"></i></button><button type="button" data-traveler-reply-action="delete" data-id="${item.id}" title="删除"><i class="fas fa-trash"></i></button></div></article>`).join('') : '<div class="traveler-reply-empty">没有找到旅途回应字卡</div>'}</div>`;
+    document.getElementById('traveler-reply-add')?.addEventListener('click', () => editTravelerReply(null));
+    const search = document.getElementById('traveler-reply-search-input');
+    search?.addEventListener('input', (event) => { _searchQuery = event.target.value; renderTravelerReplyLibrary(); event.target.focus(); });
+    list.querySelectorAll('[data-traveler-reply-action]').forEach((button) => button.addEventListener('click', () => {
+        const item = travelerReplies.find(entry => entry.id === button.dataset.id);
+        if (!item) return;
+        const action = button.dataset.travelerReplyAction;
+        if (action === 'toggle') item.enabled = item.enabled === false;
+        if (action === 'edit') { editTravelerReply(item); return; }
+        if (action === 'delete') { if (!confirm('确定删除这张旅途回应字卡吗？')) return; travelerReplies = travelerReplies.filter(entry => entry.id !== item.id); }
+        throttledSaveData(); renderTravelerReplyLibrary();
+    }));
+}
+
+function editTravelerReply(item) {
+    const initial = item ? item.text : '';
+    const text = prompt(item ? '编辑旅途回应字卡：' : '请输入新的旅途回应字卡：', initial);
+    if (text == null || !text.trim()) return;
+    if (item) item.text = text.trim();
+    else travelerReplies.unshift({ id: `traveler_reply_user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, text: text.trim(), source: 'user', enabled: true });
+    throttledSaveData(); renderTravelerReplyLibrary();
+}
+
 const ICONS = {
     reply:    `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H9l-3 2.5V11H3a1 1 0 01-1-1V3z" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>`,
     magic:    `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l.9 2.7L11.6 4l-1.8 2.2L12 8l-2.9-.1L8 10.8l-.9-2.9L4.4 8l1.8-2.2L4.4 4l2.7.7L8 2z" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="2" y1="14" x2="5" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
@@ -187,6 +248,11 @@ function renderReplyLibraryRaf() {
 
 function renderReplyLibrary() {
     if (currentMajorTab === 'announcement') return;
+    if (currentMajorTab === 'traveler') {
+        ensureTravelerReplyLibrary();
+        renderTravelerReplyLibrary();
+        return;
+    }
     const list = document.getElementById('custom-replies-list');
     const titleEl = document.getElementById('cr-modal-title');
     if (!list) return;
@@ -241,6 +307,9 @@ function renderReplyLibrary() {
         else if (currentSubTab === 'statuses') itemsToRender = customStatuses;
         else if (currentSubTab === 'mottos') itemsToRender = customMottos;
         else if (currentSubTab === 'intros') itemsToRender = customIntros;
+            } else if (currentMajorTab === 'traveler') {
+                renderTravelerReplyLibrary();
+                return;
     }
 
     if (renderType === 'emoji') { _renderEmojiTab(list, itemsToRender); return; }
@@ -2234,6 +2303,7 @@ function initReplyLibraryListeners() {
             _searchQuery = '';
             _activeGroupFilter = null;
             currentSubTab = LIBRARY_CONFIG[currentMajorTab].tabs[0].id;
+            if (currentMajorTab === 'traveler') ensureTravelerReplyLibrary();
             renderReplyLibrary();
         });
     });

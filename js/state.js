@@ -25,6 +25,8 @@
         let isBatchFavoriteMode = false;
         let selectedMessages = [];
         let customReplies = [];
+        let travelerReplies = [];
+        let travelerRepliesInitialized = false;
         let customPokes = [];
         let customStatuses = [];
         let customPokeGroups = [];

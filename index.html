@@ -974,12 +974,20 @@
                     <button class="cs-tab" data-panel="cs-panel-names" onclick="switchCsTab(this)">
                         <i class="fas fa-user-edit"></i> 昵称
                     </button>
+                    <button class="cs-tab" data-panel="cs-panel-traveler-interaction" onclick="switchCsTab(this)">
+                        <i class="fas fa-compass"></i> 旅途互动
+                    </button>
                 </div>
             </div>
 
             <div class="cs-panels">
 
                 <div class="cs-panel active" id="cs-panel-chat">
+                    <button type="button" class="traveler-interaction-entry" id="open-traveler-interaction" onclick="switchCsTab(document.querySelector('.cs-tab[data-panel=\'cs-panel-traveler-interaction\']'))">
+                        <span class="traveler-interaction-entry-icon"><i class="fas fa-compass"></i></span>
+                        <span class="traveler-interaction-entry-copy"><strong>旅途互动</strong><small>设置角色如何回应新生成的旅途事件</small></span>
+                        <i class="fas fa-chevron-right traveler-interaction-entry-arrow"></i>
+                    </button>
                     <p class="cs-group-label">消息交互</p>
                     <div class="cs-card">
                         <div class="setting-pill-row" id="reply-toggle">
@@ -1249,6 +1257,49 @@
                         </button>
                     </div>
                     <p class="cs-hint">专为顶部昵称不可见的机型设置</p>
+                </div>
+
+                <div class="cs-panel" id="cs-panel-traveler-interaction">
+                    <button type="button" class="traveler-settings-back" id="back-traveler-interaction">
+                        <i class="fas fa-arrow-left"></i> 返回传讯规则
+                    </button>
+                    <div class="traveler-settings-heading">
+                        <div class="traveler-settings-heading-icon"><i class="fas fa-compass"></i></div>
+                        <div>
+                            <h2>旅途互动</h2>
+                            <p>设置角色如何回应新生成的旅途事件。</p>
+                        </div>
+                    </div>
+                    <div class="settings-section traveler-settings-section">
+                        <div class="settings-section-title"><i class="fas fa-comments"></i>自动回应</div>
+                        <div class="setting-pill-row" id="traveler-interaction-enabled-toggle">
+                            <span class="setting-pill-icon"><i class="fas fa-feather-pointed"></i></span>
+                            <span class="setting-pill-label">自动回应 <span class="traveler-setting-hint">旅途事件发生后，角色可能使用现有字卡回应</span></span>
+                            <div class="setting-pill-switch"><div class="setting-pill-knob"></div></div>
+                        </div>
+                    </div>
+                    <div class="settings-section traveler-settings-section">
+                        <div class="settings-section-title"><i class="fas fa-wave-square"></i>回应频率</div>
+                        <p class="traveler-setting-description">只影响角色自动回应事件的频率，不影响用户主动邀请。</p>
+                        <div class="traveler-choice-group" id="traveler-interaction-frequency">
+                            <button type="button" class="traveler-choice-btn" data-value="low">较少</button>
+                            <button type="button" class="traveler-choice-btn" data-value="normal">适中</button>
+                            <button type="button" class="traveler-choice-btn" data-value="high">较频繁</button>
+                        </div>
+                    </div>
+                    <div class="settings-section traveler-settings-section">
+                        <div class="settings-section-title"><i class="fas fa-hourglass-half"></i>自动回应冷却时间</div>
+                        <p class="traveler-setting-description">这是自动回应之间的冷却时间，不是普通聊天回复延迟，也不限制用户主动邀请。</p>
+                        <select id="traveler-interaction-cooldown" class="traveler-setting-select">
+                            <option value="600000">10 分钟</option>
+                            <option value="1800000">30 分钟</option>
+                            <option value="3600000">60 分钟</option>
+                        </select>
+                    </div>
+                    <div class="traveler-settings-note">
+                        <i class="fas fa-scroll"></i>
+                        <div>自动回应只在新旅途事件生成时尝试触发，并直接使用现有传讯字卡库，不会调用 AI 或生成新台词。手动邀请不受自动回应设置限制。</div>
+                    </div>
                 </div>
 
             </div>
@@ -1777,6 +1828,10 @@
                 <button class="sidebar-btn active" data-major="reply">
                     <i class="fas fa-comment-dots"></i>
                     <span>传讯字卡</span>
+                </button>
+                <button class="sidebar-btn" data-major="traveler">
+                    <i class="fas fa-compass"></i>
+                    <span>旅途回应</span>
                 </button>
                 <button class="sidebar-btn" data-major="atmosphere">
                     <i class="fas fa-magic"></i>

@@ -182,7 +182,7 @@
         if (!flags.inclThemes) p.push('backgroundGallery', 'chatBackground', 'partnerAvatar', 'myAvatar', 'playerCover');
         if (!flags.inclMsgs) p.push('chatMessages');
         if (!flags.inclSet) p.push('chatSettings', 'partnerPersonas', 'showPartnerNameInChat');
-        if (!flags.inclCustom) p.push('customReplies', 'customPokes', 'customStatuses', 'customMottos', 'customIntros', 'customEmojis', 'customReplyGroups', 'customPokeGroups', 'customStatusGroups');
+        if (!flags.inclCustom) p.push('customReplies', 'travelerReplies', 'travelerRepliesInitialized', 'customPokes', 'customStatuses', 'customMottos', 'customIntros', 'customEmojis', 'customReplyGroups', 'customPokeGroups', 'customStatusGroups');
         if (!flags.inclAnn) p.push('anniversaries');
         if (flags.inclEvents === false) p.push('eventTemplates', 'eventCategories', 'observations');
         if (!flags.inclThemes) p.push('customThemes', 'themeSchemes');

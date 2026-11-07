@@ -171,6 +171,9 @@ function loadMoreHistory() {
                 partnerAvatarShape: 'circle',
 autoSendEnabled: false,
 autoSendInterval: 5,
+        travelerInteractionEnabled: true,
+        travelerInteractionFrequency: 'normal',
+        travelerInteractionCooldownMs: 30 * 60 * 1000,
         allowReadNoReply: false, 
         readNoReplyChance: 0.2,
         timeFormat: 'HH:mm',
@@ -305,7 +308,9 @@ const loadData = async () => {
             localforage.getItem(getStorageKey('myStickerLibrary')),
             localforage.getItem(getStorageKey('customReplyGroups')),
             localforage.getItem(getStorageKey('customPokeGroups')),
-            localforage.getItem(getStorageKey('customStatusGroups'))
+            localforage.getItem(getStorageKey('customStatusGroups')),
+            localforage.getItem(getStorageKey('travelerReplies')),
+            localforage.getItem(getStorageKey('travelerRepliesInitialized'))
         ]);
         const getVal = (index) => results[index].status === 'fulfilled' ? results[index].value : null;
 
@@ -330,10 +335,15 @@ const loadData = async () => {
         const savedReplyGroups = getVal(18);
         const savedPokeGroups = getVal(19);
         const savedStatusGroups = getVal(20);
+        const savedTravelerReplies = getVal(21);
+        const savedTravelerRepliesInitialized = getVal(22);
 
         if (savedPartnerPersonas) partnerPersonas = savedPartnerPersonas;
 
         if (savedSettings) Object.assign(settings, savedSettings);
+        if (!savedSettings || !Object.prototype.hasOwnProperty.call(savedSettings, 'travelerInteractionEnabled')) {
+            settings.travelerInteractionEnabled = true;
+        }
 
         if (settings.showPartnerNameInChat !== undefined) {
             showPartnerNameInChat = settings.showPartnerNameInChat;
@@ -395,6 +405,8 @@ const loadData = async () => {
         if (savedReplyGroups) window.customReplyGroups = savedReplyGroups;
         if (savedPokeGroups) window.customPokeGroups = savedPokeGroups;
         if (savedStatusGroups) window.customStatusGroups = savedStatusGroups;
+        if (Array.isArray(savedTravelerReplies)) travelerReplies = savedTravelerReplies;
+        travelerRepliesInitialized = savedTravelerRepliesInitialized === true;
         if (savedAnniversaries) anniversaries = savedAnniversaries;
         if (savedStickers) stickerLibrary = savedStickers;
         if (savedMyStickers) myStickerLibrary = savedMyStickers;
@@ -443,6 +455,10 @@ const loadData = async () => {
 };
 
 const LIBRARY_CONFIG = {
+    traveler: {
+        title: "旅途回应",
+        tabs: [{ id: 'traveler-replies', name: '旅途回应', mode: 'list' }]
+    },
     reply: {
         title: "传讯字卡",
         tabs: [
@@ -569,6 +585,8 @@ const saveData = async () => {
         { key: 'customReplyGroups',      val: () => localforage.setItem(getStorageKey('customReplyGroups'), window.customReplyGroups || []) },
         { key: 'customPokeGroups',        val: () => localforage.setItem(getStorageKey('customPokeGroups'), window.customPokeGroups || []) },
         { key: 'customStatusGroups',      val: () => localforage.setItem(getStorageKey('customStatusGroups'), window.customStatusGroups || []) },
+        { key: 'travelerReplies',         val: () => localforage.setItem(getStorageKey('travelerReplies'), travelerReplies) },
+        { key: 'travelerRepliesInitialized', val: () => localforage.setItem(getStorageKey('travelerRepliesInitialized'), travelerRepliesInitialized) },
         { key: 'customEmojis',           val: () => localforage.setItem(getStorageKey('customEmojis'), customEmojis) },
         { key: 'anniversaries',          val: () => localforage.setItem(getStorageKey('anniversaries'), anniversaries) },
         { key: 'customPokes',            val: () => localforage.setItem(getStorageKey('customPokes'), customPokes) },
@@ -994,6 +1012,7 @@ function createMessageFragment(msg, prevMsg, nextMsg, lastSenderRef) {
         lastSenderRef.current = 'system';
         return fragment;
     }
+
 
     let showTimestamp = true;
     if (settings.timeFormat === 'off') {
